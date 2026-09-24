@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Лабораторна робота №2 | JavaScript</title>
+	<style>
+		:root {
+			--ink: #17212b;
+			--muted: #5c6975;
+			--paper: #fffdf8;
+			--line: #d9e0e5;
+			--accent: #d85232;
+			--accent-dark: #96371f;
+			--blue: #1f5f78;
+			--soft: #eef5f4;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			color: var(--ink);
+			background: #e9eef0;
+			font-family: Georgia, "Times New Roman", serif;
+			line-height: 1.55;
+		}
+
+		header {
+			padding: 42px max(24px, calc((100% - 1100px) / 2));
+			color: #fffdf8;
+			background: linear-gradient(120deg, #173b4b, #2e7180 60%, #d85232);
+		}
+
+		header p { max-width: 720px; margin: 8px 0 0; color: #e4eeee; }
+		h1, h2, h3 { line-height: 1.15; }
+		h1 { max-width: 780px; margin: 0; font-size: clamp(2rem, 5vw, 4rem); }
+		h2 { margin-top: 0; color: var(--blue); }
+		h3 { margin-bottom: 8px; }
+
+		nav {
+			position: sticky;
+			top: 0;
+			z-index: 2;
+			padding: 10px max(24px, calc((100% - 1100px) / 2));
+			background: #173b4b;
+			overflow-x: auto;
+			white-space: nowrap;
+		}
+
+		nav a { margin-right: 18px; color: #fff; text-decoration: none; font-size: .95rem; }
+		nav a:hover { color: #ffd5a7; }
+		main { max-width: 1100px; margin: 28px auto 60px; padding: 0 20px; }
+		section { margin: 24px 0; padding: 28px; background: var(--paper); border: 1px solid var(--line); box-shadow: 0 8px 24px #173b4b12; }
+		.intro { border-left: 7px solid var(--accent); }
+		.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+		.panel { padding: 18px; background: var(--soft); border: 1px solid var(--line); }
+		label { display: block; margin: 8px 0 4px; font-weight: bold; }
+		input, button, textarea { font: inherit; }
+		input, textarea { width: 100%; padding: 9px 10px; border: 1px solid #9aaab2; background: #fff; }
+		button { margin: 10px 6px 0 0; padding: 9px 14px; color: #fff; background: var(--accent); border: 0; cursor: pointer; }
+		button:hover { background: var(--accent-dark); }
+		.secondary { background: var(--blue); }
+		.output { margin-top: 14px; padding: 12px; min-height: 42px; background: #fff; border-left: 4px solid var(--blue); white-space: pre-wrap; }
+		#clock { font: bold clamp(1.8rem, 5vw, 3.5rem)/1.1 Consolas, monospace; color: var(--accent-dark); letter-spacing: .04em; }
+		.calculator { max-width: 360px; }
+		#calcDisplay { text-align: right; font: 1.5rem Consolas, monospace; }
+		.calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+		.calc-buttons button { margin: 0; min-height: 42px; }
+		table { width: 100%; margin-top: 16px; border-collapse: collapse; }
+		td, th { padding: 7px; border: 1px solid var(--line); text-align: center; }
+		td input { min-width: 55px; text-align: center; }
+		code { padding: 2px 5px; background: #e6eeee; }
+		footer { padding: 24px; text-align: center; color: var(--muted); }
+		@media (max-width: 600px) { section { padding: 20px 16px; } header { padding: 32px 20px; } }
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Лабораторна робота №2</h1>
+		<p>Створення динамічних інтерфейсів засобами JavaScript та дослідження DevTools.</p>
+	</header>
+
+	<nav aria-label="Навігація лабораторною роботою">
+		<a href="#task1">1. Годинник</a>
+		<a href="#task2">2. Калькулятор</a>
+		<a href="#task3">3. Матриця</a>
+		<a href="#task4">4. console.log</a>
+		<a href="#task5">5. Console API</a>
+		<a href="#task6">6–7. Імена</a>
+	</nav>
+
+	<main>
+		<section class="intro">
+			<h2>Мета роботи</h2>
+			<p>Набути навичок написання функцій JavaScript, створення динамічних елементів HTML та дослідження результатів у панелі DevTools.</p>
+			<p><strong>Виконавець:</strong> Лозинський Павло Олександрович, група ІПЗ-22, порядковий номер 19.</p>
+		</section>
+
+		<section id="task1">
+			<h2>Завдання 1. Динамічний годинник</h2>
+			<p>Формат для №19: <code>year#month#day-hour#min#sec</code>.</p>
+			<div id="clock" aria-live="polite"></div>
+		</section>
+
+		<section id="task2">
+			<h2>Завдання 2. Калькулятор</h2>
+			<div class="calculator">
+				<input id="calcDisplay" type="text" value="" aria-label="Поле калькулятора" readonly>
+				<div class="calc-buttons">
+					<button type="button" data-calc="7">7</button><button type="button" data-calc="8">8</button><button type="button" data-calc="9">9</button><button type="button" data-calc="/">/</button>
+					<button type="button" data-calc="4">4</button><button type="button" data-calc="5">5</button><button type="button" data-calc="6">6</button><button type="button" data-calc="*">*</button>
+					<button type="button" data-calc="1">1</button><button type="button" data-calc="2">2</button><button type="button" data-calc="3">3</button><button type="button" data-calc="-">-</button>
+					<button type="button" data-calc="0">0</button><button type="button" data-calc=".">.</button><button type="button" data-calc="+">+</button><button type="button" data-calc="=">=</button>
+				</div>
+				<button class="secondary" type="button" id="clearCalc">Очистити</button>
+				<div class="output" id="calcResult">Результат з'явиться тут.</div>
+			</div>
+		</section>
+
+		<section id="task3">
+			<h2>Завдання 3. Динамічна матриця</h2>
+			<p>Варіант 19: обчислення суми елементів, індекси рядка та стовпця яких збігаються.</p>
+			<div class="grid">
+				<div><label for="rows">Кількість рядків</label><input id="rows" type="number" min="1" max="12" value="4"></div>
+				<div><label for="columns">Кількість стовпців</label><input id="columns" type="number" min="1" max="12" value="4"></div>
+			</div>
+			<button type="button" id="buildMatrix">Побудувати матрицю</button>
+			<button class="secondary" type="button" id="calculateMatrix">Розрахувати діагональ</button>
+			<div id="matrixArea"></div>
+			<div class="output" id="matrixResult">Матрицю ще не побудовано.</div>
+		</section>
+
+		<section id="task4">
+			<h2>Завдання 4. Метод console.log()</h2>
+			<p>Натисніть кнопку та відкрийте вкладку <strong>Console</strong> у DevTools (F12).</p>
+			<button type="button" id="logDemo">Виконати console.log()</button>
+			<div class="output">Демонстрація: остача від ділення, перевірка на нуль і форматування через <code>%d</code> та <code>%s</code>.</div>
+		</section>
+
+		<section id="task5">
+			<h2>Завдання 5. Інші методи Console API</h2>
+			<button type="button" id="consoleDemo">Виконати всі методи</button>
+			<div class="output">Перевірте Console: <code>info</code>, <code>warn</code>, <code>error</code>, <code>dir</code>, <code>dirxml</code>, <code>time</code>, <code>assert</code>, <code>profile</code>.</div>
+		</section>
+
+		<section id="task6">
+			<h2>Завдання 6–7. Робота з масивом імен</h2>
+			<p>Вокальна перша літера дає <code>Goodbye</code>, приголосна — <code>Hello</code>. Додатковий спосіб селекціонування: порівняння суми ASCII-кодів із порогом.</p>
+			<label for="names">Імена через кому</label>
+			<input id="names" type="text" value="Anna, Brian, Olena, Mark, Emily, Sofia">
+			<label for="asciiLimit">Поріг ASCII-кодів</label>
+			<input id="asciiLimit" type="number" value="500">
+			<button type="button" id="namesDemo">Вивести результати в Console</button>
+			<div class="output">Результати завдань 6–7 виводяться у Console браузера.</div>
+		</section>
+	</main>
+	<footer>JavaScript Laboratory 2 · 2026</footer>
+
+	<script>
+		const clockElement = document.getElementById('clock');
+		function updateClock() {
+			const now = new Date();
+			const twoDigits = value => String(value).padStart(2, '0');
+			const date = `${now.getFullYear()}#${twoDigits(now.getMonth() + 1)}#${twoDigits(now.getDate())}`;
+			const time = `${twoDigits(now.getHours())}#${twoDigits(now.getMinutes())}#${twoDigits(now.getSeconds())}`;
+			clockElement.textContent = `${date}-${time}`;
+		}
+		updateClock();
+		setInterval(updateClock, 1000);
+
+		const calcDisplay = document.getElementById('calcDisplay');
+		document.querySelectorAll('[data-calc]').forEach(button => {
+			button.addEventListener('click', () => {
+				if (button.dataset.calc === '=') {
+					try {
+						const expression = calcDisplay.value;
+						if (!/^[0-9+*/.()\s-]+$/.test(expression)) throw new Error('Некоректний вираз');
+						calcDisplay.value = String(eval(expression));
+						document.getElementById('calcResult').textContent = `Результат: ${calcDisplay.value}`;
+					} catch (error) {
+						document.getElementById('calcResult').textContent = `Помилка: ${error.message}`;
+					}
+					return;
+				}
+				calcDisplay.value += button.dataset.calc;
+			});
+		});
+		document.getElementById('clearCalc').addEventListener('click', () => {
+			calcDisplay.value = '';
+			document.getElementById('calcResult').textContent = 'Результат з\'явиться тут.';
+		});
+
+		let matrixSize = { rows: 0, columns: 0 };
+		function buildMatrix() {
+			const rows = Number(document.getElementById('rows').value);
+			const columns = Number(document.getElementById('columns').value);
+			if (!Number.isInteger(rows) || !Number.isInteger(columns) || rows < 1 || columns < 1 || rows > 12 || columns > 12) {
+				document.getElementById('matrixResult').textContent = 'Введіть цілі числа від 1 до 12.';
+				return;
+			}
+			matrixSize = { rows, columns };
+			let html = '<table><thead><tr><th></th>';
+			for (let column = 1; column <= columns; column += 1) html += `<th>${column}</th>`;
+			html += '</tr></thead><tbody>';
+			for (let row = 1; row <= rows; row += 1) {
+				html += `<tr><th>${row}</th>`;
+				for (let column = 1; column <= columns; column += 1) html += `<td><input type="number" id="cell-${row}-${column}" value="${row}${column}"></td>`;
+				html += '</tr>';
+			}
+			document.getElementById('matrixArea').innerHTML = `${html}</tbody></table>`;
+			document.getElementById('matrixResult').textContent = 'Матрицю побудовано. Змініть значення або виконайте розрахунок.';
+		}
+		function calculateMatrix() {
+			if (!matrixSize.rows) { document.getElementById('matrixResult').textContent = 'Спочатку побудуйте матрицю.'; return; }
+			let sum = 0;
+			for (let index = 1; index <= Math.min(matrixSize.rows, matrixSize.columns); index += 1) sum += Number(document.getElementById(`cell-${index}-${index}`).value) || 0;
+			document.getElementById('matrixResult').textContent = `Сума елементів головної діагоналі: ${sum}`;
+		}
+		document.getElementById('buildMatrix').addEventListener('click', buildMatrix);
+		document.getElementById('calculateMatrix').addEventListener('click', calculateMatrix);
+		buildMatrix();
+
+		document.getElementById('logDemo').addEventListener('click', () => {
+			const number = 17;
+			const divisor = 5;
+			const values = [10, 20, 30];
+			console.log('Остача:', number % divisor);
+			console.log('Остача дорівнює нулю:', number % divisor === 0);
+			console.log('Значення масиву: %d, %d, %d', values[0], values[1], values[2]);
+			console.log('Перший елемент масиву як рядок: %s', values[0]);
+		});
+
+		document.getElementById('consoleDemo').addEventListener('click', () => {
+			const object = { name: 'JavaScript', version: 2026 };
+			console.info('Інформаційне повідомлення');
+			console.warn('Попередження для дослідження');
+			console.error('Демонстраційне повідомлення про помилку');
+			console.dir(object);
+			console.dirxml(document.querySelector('#task5'));
+			console.time('Обчислення');
+			for (let index = 0; index < 100000; index += 1) Math.sqrt(index);
+			console.timeEnd('Обчислення');
+			console.assert(2 + 2 === 5, 'Перевірка console.assert: умова хибна');
+			if (console.profile) { console.profile('Демонстраційний профіль'); console.profileEnd('Демонстраційний профіль'); }
+		});
+
+		document.getElementById('namesDemo').addEventListener('click', () => {
+			const names = document.getElementById('names').value.split(',').map(name => name.trim()).filter(Boolean);
+			const limit = Number(document.getElementById('asciiLimit').value);
+			const vowels = 'AEIOU';
+			console.clear();
+			console.log('Завдання 6: голосна на початку -> Goodbye, приголосна -> Hello.');
+			names.forEach(name => {
+				const greeting = vowels.includes(name[0].toUpperCase()) ? 'Goodbye' : 'Hello';
+				console.log(`${greeting} ${name}`);
+			});
+			console.log('Завдання 7: сума ASCII-кодів більша за поріг %d.', limit);
+			names.forEach(name => {
+				const asciiSum = [...name].reduce((sum, character) => sum + character.charCodeAt(0), 0);
+				console.log('%s: ASCII сума = %d, результат = %s', name, asciiSum, asciiSum > limit ? 'вище порогу' : 'не вище порогу');
+			});
+		});
+	</script>
+</body>
+</html>

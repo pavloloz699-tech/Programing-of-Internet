@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота 1</title>
+</head>
+<body onLoad = "fun('Відбулось завантаження сторінки');">
+
+    <h3>Завдання 1</h3>
+    <p>Це звичайний HTML абзац</p>
+    <p>Знову звичайний HTML абзац</p>
+    <form>
+        <input type="button" value="Натисни мене" onclick="alert('Я народився 19.07.2008року в місті Івано-Франківськ')">
+    </form>
+
+    <h3>Завдання 2</h3>
+    <p>Це звичайний HTML абзац</p>
+    <button type="button" onclick="calculation()">Натисни мене</button>
+
+    <h3>Завдання 3</h3>
+    <form id = "main_form">
+        <input type="text" size = "100" value="onChange" onChange = "fun('Відбувся клік на текстовому елементі форми');"><br>
+        <input type="text" size = "100" value="onSelect" onSelect = "fun('Зміст текстового поля форми змінений');"><br>
+        <input type = "text" size = "100" id = "t_res" onMouseOver = "fun('Курсор потрапив на гіперпосилання');" onMouseOut = "fun('Курсор потрапив не на гіперпосилання');">
+        <p>onFocus </p>
+        <input type="text" size = "100" value="onSelect" onSelect = "fun1('Текстовий елемент форми отримав фокус');" onSelect = "fun('В текстовому полі форми виділений текст');"><br>
+        <input type = "text" size = "100" id = "t_res2";">
+        <br>
+    </form>
+
+    <h3>Завдання 4</h3>
+    <p>Розгалужений обчислювальний процес</p>
+    <form>
+        <label for="xValue">x:</label>
+        <input type="number" id="xValue" value="2"><br><br>
+
+        <label for="yValue">y:</label>
+        <input type="number" id="yValue" value="3"><br><br>
+
+        <button type="button" onclick="calculateBranch()">Обчислити</button>
+    </form>
+
+    <p id="result">Результат: </p>
+
+    <script>
+        document.write("Привіт! Мене звати Лозинський Павло Олександрович студент групи ІПЗ-22 Мій Порядковий номер 19");
+        
+        function calculation() {
+            let x= 12;
+            let y= 5;
+            let f =Math.pow(x, 3) + Math.pow(x, 2) + x + x*Math.pow(y, 2);
+           
+            alert(`Результат обчислення: ${f}`);
+
+        }
+
+        function calculateBranch() {
+            const x = Number(document.getElementById('xValue').value);
+            const y = Number(document.getElementById('yValue').value);
+            let F;
+
+            if (x > 0 && y > 0) {
+                F = 2 * x + x * y + x * x;
+            } else if (x !== 0 && ((2 * x + y) / 2) !== 0) {
+                F = y / (2 * x);
+            } else {
+                F = x * x;
+            }
+
+            document.getElementById('result').textContent = 'Результат: F = ' + F;
+        }
+
+        function fun(a) {
+            main_form.t_res.value = a;
+        }
+
+        function fun1(a) {
+            main_form.t_res2.value = a;
+        }
+
+        function calculateSeries() {
+            const x = Number(document.getElementById('xSeries').value);
+            const y = Number(document.getElementById('ySeries').value);
+            let sum = 0;
+
+            for (let i = 3; i <= 7; i++) {
+                sum += Math.pow(-1, i + 1) * ((1 - x * Math.pow(y, 2)) / (i + 12));
+            }
+
+            document.getElementById('seriesResult').textContent = 'Результат: S = ' + sum.toFixed(6);
+        }
+    </script>
+
+    <h3>Завдання 5</h3>
+    <p>Розрахунок суми ряду</p>
+    <form>
+        <label for="xSeries">x:</label>
+        <input type="number" id="xSeries" value="2" step="any"><br><br>
+
+        <label for="ySeries">y:</label>
+        <input type="number" id="ySeries" value="3" step="any"><br><br>
+
+        <button type="button" onclick="calculateSeries()">Обчислити ряд</button>
+    </form>
+
+    <p id="seriesResult">Результат: </p>
+
+    <h3><a href="task2.html">Завдання 6</a></h3>
+</body>
+</html> 

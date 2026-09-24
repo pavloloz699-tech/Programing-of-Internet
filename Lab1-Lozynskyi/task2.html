@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товари на складі</title>
+    <script>
+        const products = ["Папір", "Ручка", "Олівець", "Пенал", "Книга", "Лінійка"];
+        const quantity = [120, 80, 200, 35, 50, 75];
+        const cost = [12.5, 18.0, 9.75, 240.0, 95.5, 28.0];
+
+        let selectedIndex = -1;
+
+        function updateSelectedIndex() {
+            const select = document.getElementById("productName");
+            selectedIndex = select.selectedIndex;
+        }
+
+        function fun1() {
+            updateSelectedIndex();
+            const resultQty = document.getElementById("quantityResult");
+            const resultCost = document.getElementById("costResult");
+
+            if (selectedIndex === -1) {
+                resultQty.value = "Товар не вибрано";
+                resultCost.value = "Товар не вибрано";
+                return;
+            }
+
+            resultQty.value = `Кількість: ${quantity[selectedIndex]}`;
+            resultCost.value = `Вартість: ${cost[selectedIndex]} грн`;
+        }
+
+        function fun2() {
+            updateSelectedIndex();
+
+            if (selectedIndex === -1) {
+                alert("Спочатку виберіть товар");
+                return;
+            }
+
+            const total = quantity[selectedIndex] * cost[selectedIndex];
+            document.getElementById("totalResult").value = `Загальна сума: ${total.toFixed(2)} грн`;
+        }
+    </script>
+</head>
+<body>
+    <p><a href="task1.html">← Назад до task1.html</a></p>
+    <h2>Перевірка наявності товару на складі</h2>
+
+    <form>
+        <label for="productName">Виберіть товар:</label>
+        <select id="productName">
+            <option value="">-- Виберіть товар --</option>
+            <option>Папір</option>
+            <option>Ручка</option>
+            <option>Олівець</option>
+            <option>Пенал</option>
+            <option>Книга</option>
+            <option>Лінійка</option>
+        </select>
+        <br><br>
+
+        <input type="button" value="Наявна кількість і вартість" onclick="fun1()">
+        <br><br>
+
+        <label for="quantityResult">Кількість:</label>
+        <input type="text" id="quantityResult" size="40">
+        <br><br>
+
+        <label for="costResult">Вартість:</label>
+        <input type="text" id="costResult" size="40">
+        <br><br>
+
+        <input type="button" value="Загальна сума" onclick="fun2()">
+        <br><br>
+
+        <label for="totalResult">Результат:</label>
+        <input type="text" id="totalResult" size="50">
+    </form>
+</body>
+</html>
