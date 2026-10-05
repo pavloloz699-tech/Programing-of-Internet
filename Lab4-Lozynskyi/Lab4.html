@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f3f6fb">
+    <title>Тестування з основ веброзробки</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1e293b;
+            background: #f3f6fb;
+            font-synthesis: none;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-width: 320px;
+            margin: 0;
+            background: #f3f6fb;
+            line-height: 1.6;
+        }
+
+        .site-header {
+            background: #173b67;
+            color: #fff;
+        }
+
+        .header-content {
+            width: min(100% - 2rem, 1000px);
+            margin: 0 auto;
+            padding: 1.25rem 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(1.45rem, 4vw, 2rem);
+        }
+
+        .site-nav {
+            background: #214c7d;
+        }
+
+        .nav-content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: min(100% - 2rem, 1000px);
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.35rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.8rem 1rem;
+            color: #fff;
+            text-decoration: none;
+            transition: background-color 180ms ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a:focus-visible {
+            background: #326398;
+        }
+
+        .menu-toggle {
+            display: none;
+            border: 0;
+            padding: 0.65rem;
+            color: #fff;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .menu-toggle svg {
+            display: block;
+            width: 1.6rem;
+            height: 1.6rem;
+            fill: none;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-width: 2;
+        }
+
+        main {
+            width: min(100% - 2rem, 1000px);
+            margin: 2rem auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.4rem;
+            align-items: end;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .tab-button {
+            border: 1px solid #cbd5e1;
+            border-bottom: 0;
+            border-radius: 0.6rem 0.6rem 0 0;
+            padding: 0.75rem 1.15rem;
+            color: #334155;
+            background: #e2e8f0;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab-button[aria-selected="true"] {
+            position: relative;
+            bottom: -2px;
+            border-color: #cbd5e1;
+            color: #173b67;
+            background: #fff;
+        }
+
+        .tab-panel {
+            padding: clamp(1rem, 4vw, 2rem);
+            border: 1px solid #cbd5e1;
+            border-top: 0;
+            border-radius: 0 0 0.75rem 0.75rem;
+            background: #fff;
+            box-shadow: 0 8px 24px rgb(30 41 59 / 6%);
+        }
+
+        .tab-panel[hidden] {
+            display: none;
+        }
+
+        .intro {
+            margin-top: 0;
+            color: #475569;
+        }
+
+        .question {
+            margin: 1.25rem 0;
+            border: 1px solid #dbe3ed;
+            border-radius: 0.65rem;
+            padding: 1rem 1.2rem;
+            background: #fbfdff;
+        }
+
+        .question legend {
+            max-width: 100%;
+            padding: 0 0.35rem;
+            font-weight: 650;
+        }
+
+        .question label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin: 0.45rem 0;
+            cursor: pointer;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            flex: 0 0 auto;
+            margin-top: 0.35rem;
+            accent-color: #2563eb;
+        }
+
+        select,
+        input[type="text"] {
+            min-height: 2.6rem;
+            border: 1px solid #94a3b8;
+            border-radius: 0.4rem;
+            padding: 0.45rem 0.65rem;
+            color: inherit;
+            background: #fff;
+            font: inherit;
+        }
+
+        select {
+            max-width: 100%;
+        }
+
+        select[multiple] {
+            min-width: min(100%, 20rem);
+            min-height: 8rem;
+        }
+
+        input[type="text"] {
+            width: min(100%, 25rem);
+        }
+
+        .hint {
+            margin: 0.35rem 0 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .submit-button {
+            border: 0;
+            border-radius: 0.45rem;
+            padding: 0.75rem 1.15rem;
+            color: #fff;
+            background: #1769aa;
+            font: inherit;
+            font-weight: 650;
+            cursor: pointer;
+            transition: background-color 180ms ease, transform 180ms ease;
+        }
+
+        .submit-button:hover {
+            background: #12558b;
+            transform: translateY(-1px);
+        }
+
+        .submit-button:focus-visible,
+        .tab-button:focus-visible,
+        .menu-toggle:focus-visible {
+            outline: 3px solid #f59e0b;
+            outline-offset: 3px;
+        }
+
+        .results {
+            margin-top: 2rem;
+        }
+
+        .results h2,
+        .theory h2 {
+            color: #173b67;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            border: 1px solid #cbd5e1;
+            padding: 0.7rem;
+            vertical-align: top;
+        }
+
+        th {
+            color: #173b67;
+            background: #eaf1f8;
+        }
+
+        .total-score {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .theory section + section {
+            margin-top: 1.5rem;
+        }
+
+        footer {
+            padding: 1.25rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .nav-content {
+                flex-wrap: wrap;
+            }
+
+            .menu-toggle {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .nav-links {
+                display: flex;
+                flex: 0 0 100%;
+                flex-direction: column;
+                gap: 0;
+                max-height: 0;
+                overflow: hidden;
+                visibility: hidden;
+                opacity: 0;
+                transition: max-height 260ms ease, opacity 180ms ease, visibility 260ms;
+            }
+
+            .nav-links.is-open {
+                max-height: 12rem;
+                visibility: visible;
+                opacity: 1;
+            }
+
+            .nav-links a {
+                border-top: 1px solid rgb(255 255 255 / 14%);
+                padding: 0.65rem 0.25rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header" id="top">
+        <div class="header-content">
+            <h1>Основи веброзробки</h1>
+        </div>
+    </header>
+
+    <nav class="site-nav" aria-label="Головна навігація">
+        <div class="nav-content">
+            <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="main-menu">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <ul class="nav-links" id="main-menu">
+                <li><a href="#top">На початок</a></li>
+                <li><a href="#test-tab" data-open-tab="testing">Тестування</a></li>
+                <li><a href="#theory-tab" data-open-tab="theory">Теоретичні відомості</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="tabs" role="tablist" aria-label="Розділи сторінки">
+            <button class="tab-button" id="test-tab" type="button" role="tab" aria-selected="true" aria-controls="test-panel" tabindex="0">Тестування</button>
+            <button class="tab-button" id="theory-tab" type="button" role="tab" aria-selected="false" aria-controls="theory-panel" tabindex="-1">Теоретичні відомості</button>
+        </div>
+
+        <section class="tab-panel" id="test-panel" role="tabpanel" aria-labelledby="test-tab">
+            <h2>Тест з основ веброзробки</h2>
+            <p class="intro">Оберіть відповіді на запитання та натисніть «Завершити тестування». Для запитань із кількома відповідями за правильний вибір нараховується 1 бал, а за неправильний знімається 1 бал. Бал за кожне запитання не може бути меншим за нуль.</p>
+
+            <form id="quiz-form">
+                <fieldset class="question" data-question="Яка мова задає структуру та вміст вебсторінки?">
+                    <legend>1. Яка мова задає структуру та вміст вебсторінки?</legend>
+                    <label><input type="radio" name="q1" value="HTML" data-score="1"> HTML</label>
+                    <label><input type="radio" name="q1" value="CSS" data-score="-1"> CSS</label>
+                    <label><input type="radio" name="q1" value="SQL" data-score="-1"> SQL</label>
+                    <label><input type="radio" name="q1" value="JSON" data-score="-1"> JSON</label>
+                </fieldset>
+
+                <fieldset class="question" data-question="Яка технологія відповідає за стилізацію вебсторінки?">
+                    <legend>2. Яка технологія відповідає за стилізацію вебсторінки?</legend>
+                    <label><input type="radio" name="q2" value="JavaScript" data-score="-1"> JavaScript</label>
+                    <label><input type="radio" name="q2" value="CSS" data-score="1"> CSS</label>
+                    <label><input type="radio" name="q2" value="HTML" data-score="-1"> HTML</label>
+                    <label><input type="radio" name="q2" value="HTTP" data-score="-1"> HTTP</label>
+                </fieldset>
+
+                <fieldset class="question" data-question="Які два елементи HTML зазвичай використовують для створення посилання та зображення?">
+                    <legend>3. Які два елементи HTML зазвичай використовують для створення посилання та зображення?</legend>
+                    <label><input type="checkbox" name="q3" value="&lt;a&gt;" data-score="1"> &lt;a&gt;</label>
+                    <label><input type="checkbox" name="q3" value="&lt;img&gt;" data-score="1"> &lt;img&gt;</label>
+                    <label><input type="checkbox" name="q3" value="&lt;table&gt;" data-score="-1"> &lt;table&gt;</label>
+                    <label><input type="checkbox" name="q3" value="&lt;footer&gt;" data-score="-1"> &lt;footer&gt;</label>
+                </fieldset>
+
+                <fieldset class="question" data-question="Які три властивості належать до базової моделі CSS box model?">
+                    <legend>4. Які три властивості належать до базової моделі CSS box model?</legend>
+                    <label><input type="checkbox" name="q4" value="margin" data-score="1"> margin</label>
+                    <label><input type="checkbox" name="q4" value="border" data-score="1"> border</label>
+                    <label><input type="checkbox" name="q4" value="padding" data-score="1"> padding</label>
+                    <label><input type="checkbox" name="q4" value="src" data-score="-1"> src</label>
+                </fieldset>
+
+                <fieldset class="question" data-question="Який HTML-елемент створює нумерований список?">
+                    <legend>5. Який HTML-елемент створює нумерований список?</legend>
+                    <select name="q5" aria-label="Виберіть елемент для нумерованого списку">
+                        <option value="" data-score="0">— Оберіть відповідь —</option>
+                        <option value="&lt;ol&gt;" data-score="1">&lt;ol&gt;</option>
+                        <option value="&lt;ul&gt;" data-score="-1">&lt;ul&gt;</option>
+                        <option value="&lt;li&gt;" data-score="-1">&lt;li&gt;</option>
+                        <option value="&lt;dl&gt;" data-score="-1">&lt;dl&gt;</option>
+                    </select>
+                </fieldset>
+
+                <fieldset class="question" data-question="Які три варіанти є коректними способами підключення JavaScript до HTML?">
+                    <legend>6. Які три варіанти є коректними способами підключення JavaScript до HTML? (можна обрати кілька)</legend>
+                    <select name="q6" multiple size="4" aria-label="Виберіть способи підключення JavaScript">
+                        <option value="inline" data-score="1">Обробник події в атрибуті HTML</option>
+                        <option value="internal" data-score="1">Код у елементі &lt;script&gt; на сторінці</option>
+                        <option value="external" data-score="1">Зовнішній файл через src у &lt;script&gt;</option>
+                        <option value="style" data-score="-1">Файл CSS через атрибут href</option>
+                    </select>
+                    <p class="hint">Для вибору кількох варіантів утримуйте Ctrl (Windows) або Command (Mac).</p>
+                </fieldset>
+
+                <fieldset class="question" data-question="Як називається мова розмітки, скорочення якої HTML?">
+                    <legend>7. Як називається мова розмітки, скорочення якої HTML?</legend>
+                    <label for="q7-answer">Ваша відповідь:</label>
+                    <input id="q7-answer" name="q7" type="text" autocomplete="off">
+                    <input type="hidden" name="q7-score" value="1">
+                    <p class="hint">Введіть повну назву англійською або українською мовою.</p>
+                </fieldset>
+
+                <button class="submit-button" type="submit">Завершити тестування</button>
+            </form>
+
+            <section class="results" id="results" aria-live="polite" hidden>
+                <h2>Результати тестування</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Запитання</th>
+                                <th scope="col">Обрані варіанти відповіді</th>
+                                <th scope="col">Бал</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-body"></tbody>
+                    </table>
+                </div>
+                <p class="total-score" id="total-score"></p>
+            </section>
+        </section>
+
+        <section class="tab-panel theory" id="theory-panel" role="tabpanel" aria-labelledby="theory-tab" hidden>
+            <h2>Короткі теоретичні відомості</h2>
+            <section>
+                <h3>HTML — структура сторінки</h3>
+                <p>HTML (HyperText Markup Language) — мова розмітки гіпертексту, що визначає структуру та зміст вебсторінки. Елемент <code>&lt;a&gt;</code> створює посилання, <code>&lt;img&gt;</code> додає зображення, а <code>&lt;ol&gt;</code> формує нумерований список.</p>
+            </section>
+            <section>
+                <h3>CSS — оформлення</h3>
+                <p>CSS (Cascading Style Sheets) описує вигляд HTML-елементів: кольори, шрифти, відступи та розташування. У моделі блока CSS вміст оточений внутрішнім відступом <code>padding</code>, рамкою <code>border</code> і зовнішнім відступом <code>margin</code>.</p>
+            </section>
+            <section>
+                <h3>JavaScript — поведінка</h3>
+                <p>JavaScript додає сторінці інтерактивність. Його можна розмістити безпосередньо в обробнику події, у блоці <code>&lt;script&gt;</code> в HTML або в окремому файлі, підключеному через атрибут <code>src</code>. Атрибут <code>href</code> у посиланні на CSS не підключає JavaScript.</p>
+            </section>
+            <section>
+                <h3>Форми та елементи керування</h3>
+                <p>Форми збирають введені користувачем дані. Перемикачі <code>radio</code> дають змогу вибрати одну відповідь у групі, прапорці <code>checkbox</code> — кілька відповідей. Елемент <code>select</code> створює список; атрибут <code>multiple</code> дозволяє вибрати в ньому кілька пунктів.</p>
+            </section>
+        </section>
+    </main>
+
+    <footer>Навчальна сторінка з основ веброзробки</footer>
+
+    <script>
+        const quizForm = document.getElementById("quiz-form");
+        const resultsSection = document.getElementById("results");
+        const resultsBody = document.getElementById("results-body");
+        const totalScore = document.getElementById("total-score");
+
+        quizForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            resultsBody.replaceChildren();
+
+            const questions = [...quizForm.querySelectorAll(".question")];
+            let total = 0;
+            let maximumTotal = 0;
+
+            questions.forEach((question) => {
+                const controls = [...question.querySelectorAll("input:not([type='hidden']), select")];
+                const selected = controls.filter((control) => {
+                    if (control.tagName === "SELECT") {
+                        return [...control.options].some((option) => option.selected && option.value !== "");
+                    }
+                    return control.checked;
+                });
+                const selectedOptions = selected.flatMap((control) => {
+                    if (control.tagName === "SELECT") {
+                        return [...control.selectedOptions].filter((option) => option.value !== "");
+                    }
+                    return [control];
+                });
+                let score;
+                let answers;
+                let maximumScore;
+
+                if (question.querySelector("input[type='text']")) {
+                    const answer = question.querySelector("input[type='text']").value.trim();
+                    const acceptedAnswers = ["html", "hypertext markup language", "мова розмітки гіпертексту"];
+                    score = acceptedAnswers.includes(answer.toLocaleLowerCase("uk")) ? 1 : 0;
+                    maximumScore = 1;
+                    answers = answer || "Не надано відповіді";
+                } else {
+                    score = Math.max(0, selectedOptions.reduce((sum, option) => {
+                        return sum + Number(option.dataset.score);
+                    }, 0));
+                    maximumScore = controls.reduce((sum, control) => {
+                        const options = control.tagName === "SELECT" ? [...control.options] : [control];
+                        return sum + options.reduce((optionSum, option) => {
+                            return optionSum + Math.max(0, Number(option.dataset.score));
+                        }, 0);
+                    }, 0);
+                    answers = selectedOptions.map((option) => {
+                        if (option.tagName === "OPTION") {
+                            return option.textContent.trim();
+                        }
+                        return option.closest("label")?.textContent.trim() || option.value;
+                    }).join(", ") || "Не обрано";
+                }
+
+                total += score;
+                maximumTotal += maximumScore;
+                const row = document.createElement("tr");
+                [question.dataset.question, answers, `${score} / ${maximumScore}`].forEach((value) => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.append(cell);
+                });
+                resultsBody.append(row);
+            });
+
+            totalScore.textContent = `Загальний бал: ${total} / ${maximumTotal}`;
+            resultsSection.hidden = false;
+            resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        const tabButtons = [...document.querySelectorAll("[role='tab']")];
+        const tabPanels = [...document.querySelectorAll("[role='tabpanel']")];
+
+        function activateTab(button) {
+            tabButtons.forEach((tab) => {
+                const isActive = tab === button;
+                tab.setAttribute("aria-selected", String(isActive));
+                tab.tabIndex = isActive ? 0 : -1;
+            });
+            tabPanels.forEach((panel) => {
+                panel.hidden = panel.id !== button.getAttribute("aria-controls");
+            });
+        }
+
+        tabButtons.forEach((button, index) => {
+            button.addEventListener("click", () => activateTab(button));
+            button.addEventListener("keydown", (event) => {
+                if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+                    event.preventDefault();
+                    const direction = event.key === "ArrowRight" ? 1 : -1;
+                    const nextTab = tabButtons[(index + direction + tabButtons.length) % tabButtons.length];
+                    activateTab(nextTab);
+                    nextTab.focus();
+                }
+            });
+        });
+
+        document.querySelectorAll("[data-open-tab]").forEach((link) => {
+            link.addEventListener("click", () => {
+                const button = document.getElementById(
+                    link.dataset.openTab === "theory" ? "theory-tab" : "test-tab"
+                );
+                activateTab(button);
+            });
+        });
+
+        const menuToggle = document.querySelector(".menu-toggle");
+        const mainMenu = document.getElementById("main-menu");
+
+        menuToggle.addEventListener("click", () => {
+            const isOpen = mainMenu.classList.toggle("is-open");
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
+            menuToggle.setAttribute("aria-label", isOpen ? "Закрити меню" : "Відкрити меню");
+        });
+
+        mainMenu.addEventListener("click", (event) => {
+            if (event.target.closest("a")) {
+                mainMenu.classList.remove("is-open");
+                menuToggle.setAttribute("aria-expanded", "false");
+                menuToggle.setAttribute("aria-label", "Відкрити меню");
+            }
+        });
+    </script>
+</body>
+</html>

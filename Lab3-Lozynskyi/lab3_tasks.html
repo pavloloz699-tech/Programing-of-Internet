@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота №3 | JavaScript</title>
+    <style>
+        :root {
+            --bg: #eef4ff;
+            --card: #ffffff;
+            --ink: #17212b;
+            --muted: #5d6b7a;
+            --frame: #dfe7f3;
+            --primary: #1d4ed8;
+            --primary-dark: #1237a5;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --panel: #f5f7fb;
+            --display: #111827;
+            --display-text: #f8fafc;
+            --button: #e5ebf6;
+            --button-dark: #d6dcec;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #edf4ff 0%, #f9fbff 100%);
+            color: var(--ink);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #0f172a;
+        }
+
+        .task {
+            background: var(--card);
+            border: 1px solid var(--frame);
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+            padding: 22px 20px;
+            margin-bottom: 22px;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            color: var(--primary-dark);
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        button, input, select {
+            font: inherit;
+            border-radius: 10px;
+        }
+
+        button {
+            border: none;
+            background: var(--primary);
+            color: white;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .secondary {
+            background: var(--accent);
+        }
+
+        .secondary:hover {
+            background: #0d8d66;
+        }
+
+        .danger {
+            background: var(--danger);
+        }
+
+        .danger:hover {
+            background: #c92d2d;
+        }
+
+        input, select {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            min-width: 120px;
+            background: white;
+        }
+
+        a {
+            color: var(--primary);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .result {
+            margin-top: 12px;
+            background: var(--panel);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 10px 12px;
+            min-height: 42px;
+        }
+
+        .calculator-shell {
+            max-width: 430px;
+            border: 1px solid var(--frame);
+            background: #f8fafc;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2);
+        }
+
+        .display {
+            width: 100%;
+            background: var(--display);
+            color: var(--display-text);
+            border: none;
+            border-radius: 12px;
+            padding: 18px 16px;
+            text-align: right;
+            font-size: 2rem;
+            margin-bottom: 16px;
+            letter-spacing: 0.04em;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .calc-grid .wide {
+            grid-column: span 2;
+        }
+
+        .calc-btn {
+            background: var(--button);
+            color: var(--ink);
+            padding: 16px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .calc-btn:hover {
+            background: var(--button-dark);
+        }
+
+        .calc-btn.operator {
+            background: #dbeafe;
+        }
+
+        .calc-btn.operator:hover {
+            background: #cfe2ff;
+        }
+
+        .calc-btn.equal {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calc-btn.equal:hover {
+            background: var(--primary-dark);
+        }
+
+        .calc-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .mode-toggle {
+            background: #0f172a;
+        }
+
+        .mode-toggle:hover {
+            background: #1e293b;
+        }
+
+        .scientific-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--frame);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        td, th {
+            border: 1px solid var(--frame);
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        #taskList, #namesResult {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0;
+        }
+
+        #taskList li, #namesResult li {
+            background: #f8fafc;
+            border: 1px solid var(--frame);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+
+        .gallery-shell {
+            max-width: 650px;
+            margin-top: 12px;
+            padding: 16px;
+            background: #f8fafc;
+            border: 1px solid var(--frame);
+            border-radius: 16px;
+        }
+
+        .gallery-frame {
+            width: 100%;
+            height: 360px;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid var(--frame);
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .gallery-counter {
+            text-align: center;
+            margin-top: 12px;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .tree {
+            margin-top: 12px;
+            padding-left: 18px;
+            font-size: 1rem;
+        }
+
+        .tree ul {
+            list-style: none;
+            padding-left: 18px;
+            margin: 6px 0;
+        }
+
+        .tree li {
+            margin: 6px 0;
+        }
+
+        .tree .node {
+            cursor: pointer;
+            color: var(--primary-dark);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .tree .node:hover {
+            text-decoration: underline;
+        }
+
+        .hidden-tree {
+            display: none;
+        }
+
+        #highlight {
+            color: purple;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Лабораторна робота №3 | JavaScript</h1>
+
+        <section class="task">
+            <h2>Завдання 1. Робота з посиланням</h2>
+            <div class="row">
+                <a href="https://cnu.edu.ua" id="mylink" target="_blank" rel="noopener noreferrer">Go to cnu</a>
+            </div>
+            <div class="row">
+                <button id="changeLinkBtn">Змінити посилання</button>
+            </div>
+            <div id="linkStatus" class="result">Статус: посилання завантажено за замовчуванням.</div>
+        </section>
+
+        <section class="task">
+            <h2>Завдання 2. Лічильник кліків</h2>
+            <button id="clickCounterBtn">Натисни мене</button>
+            <p>Кількість кліків: <strong id="clickCounter">0</strong></p>
+        </section>
+
+        <section class="task">
+            <div class="calc-toolbar">
+                <h2>Завдання 3. Калькулятор</h2>
+                <button id="toggleScientific" class="mode-toggle" type="button">Інженерний режим</button>
+            </div>
+
+            <div class="calculator-shell">
+                <input id="calcDisplay" class="display" type="text" value="" readonly>
+
+                <div class="calc-grid" id="standardPanel">
+                    <button type="button" class="calc-btn operator" data-value="C">C</button>
+                    <button type="button" class="calc-btn operator" data-value="DEL">DEL</button>
+                    <button type="button" class="calc-btn operator" data-value="%">%</button>
+                    <button type="button" class="calc-btn operator" data-value="/">÷</button>
+
+                    <button type="button" class="calc-btn" data-value="7">7</button>
+                    <button type="button" class="calc-btn" data-value="8">8</button>
+                    <button type="button" class="calc-btn" data-value="9">9</button>
+                    <button type="button" class="calc-btn operator" data-value="*">×</button>
+
+                    <button type="button" class="calc-btn" data-value="4">4</button>
+                    <button type="button" class="calc-btn" data-value="5">5</button>
+                    <button type="button" class="calc-btn" data-value="6">6</button>
+                    <button type="button" class="calc-btn operator" data-value="-">−</button>
+
+                    <button type="button" class="calc-btn" data-value="1">1</button>
+                    <button type="button" class="calc-btn" data-value="2">2</button>
+                    <button type="button" class="calc-btn" data-value="3">3</button>
+                    <button type="button" class="calc-btn operator" data-value="+">+</button>
+
+                    <button type="button" class="calc-btn" data-value="0">0</button>
+                    <button type="button" class="calc-btn" data-value=".">.</button>
+                    <button type="button" class="calc-btn operator" data-value="^">xʸ</button>
+                    <button type="button" class="calc-btn equal" data-value="=">=</button>
+                </div>
+
+                <div id="scientificPanel" class="scientific-panel hidden">
+                    <button type="button" class="calc-btn" data-value="sin(">sin</button>
+                    <button type="button" class="calc-btn" data-value="cos(">cos</button>
+                    <button type="button" class="calc-btn" data-value="tan(">tan</button>
+                    <button type="button" class="calc-btn" data-value="sqrt(">√</button>
+
+                    <button type="button" class="calc-btn" data-value="log(">log</button>
+                    <button type="button" class="calc-btn" data-value="ln(">ln</button>
+                    <button type="button" class="calc-btn" data-value="pi">π</button>
+                    <button type="button" class="calc-btn" data-value="e">e</button>
+
+                    <button type="button" class="calc-btn" data-value="(">(</button>
+                    <button type="button" class="calc-btn" data-value=")">)</button>
+                    <button type="button" class="calc-btn" data-value="x2">x²</button>
+                    <button type="button" class="calc-btn" data-value="pow(">pow</button>
+                </div>
+            </div>
+
+            <div id="calcResult" class="result">Результат: 0</div>
+        </section>
+
+        <section class="task">
+            <h2>Завдання 4. Дерево ієрархії</h2>
+            <div id="tree-container" class="tree"></div>
+        </section>
+
+        <section class="task">
+            <h2>Завдання 5. Побудова матриці</h2>
+            <div class="row">
+                <input id="matrixSize" type="number" min="1" max="6" value="3">
+                <button id="buildMatrixBtn">Побудувати</button>
+            </div>
+            <div id="matrixContainer"></div>
+            <div id="matrixResult" class="result">Сума елементів головної діагоналі: 0</div>
+        </section>
+
+        <section class="task">
+            <h2>Завдання 6. console.log()</h2>
+            <button id="consoleBtn">Показати результат у консолі</button>
+            <div class="result">Відкрийте DevTools → Console, щоб побачити вивід JavaScript.</div>
+        </section>
+
+        <section class="task">
+            <h2>Завдання 6.1–6.3. Footer, media і текст</h2>
+            <footer id="footer-text"></footer>
+            <img id="media-item" src="https://images.unsplash.com/photo-1517479149777-5f3b1511d5ad?auto=format&fit=crop&w=800&q=80" alt="Media example" style="width: 100%; max-width: 420px; margin-top: 14px; border-radius: 12px;">
+            <p id="highlight">Цей абзац змінює колір і розмір через JavaScript.</p>
+        </section>
+
+        <section class="task">
+            <h2>Завдання 7. Робота з масивом імен</h2>
+            <div class="row">
+                <input id="namesInput" type="text" value="Anna, Bohdan, Olena, Max, Yaroslav" style="min-width: 320px;">
+                <input id="asciiLimit" type="number" value="500" style="width: 120px;">
+                <button id="namesBtn">Показати результати</button>
+            </div>
+            <ul id="namesResult"></ul>
+        </section>
+
+        <section class="task">
+            <h2>Завдання 8. Перегляд зображень</h2>
+            <p>Масив зі шляхами до файлів у форматі JSON:</p>
+            <div class="gallery-shell">
+                <div class="gallery-frame">
+                    <img id="galleryImage" src="" alt="Зображення у галереї">
+                </div>
+                <div class="gallery-controls">
+                    <button id="prevImage" type="button">Назад</button>
+                    <button id="nextImage" type="button">Вперед</button>
+                </div>
+                <div id="galleryCounter" class="gallery-counter">1 / 4</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const mylink = document.getElementById('mylink');
+        const changeLinkBtn = document.getElementById('changeLinkBtn');
+        const linkStatus = document.getElementById('linkStatus');
+
+        changeLinkBtn.addEventListener('click', () => {
+            mylink.href = 'https://cnu.edu.ua';
+            mylink.textContent = 'Перейти на сайт ЧНУ';
+            mylink.setAttribute('title', 'Офіційний сайт Чернівецького національного університету');
+            mylink.style.color = '#0f766e';
+            mylink.style.textDecoration = 'underline';
+            linkStatus.textContent = 'Статус: посилання оновлено за допомогою JavaScript.';
+        });
+
+        let clickCounter = 0;
+        document.getElementById('clickCounterBtn').addEventListener('click', () => {
+            clickCounter += 1;
+            document.getElementById('clickCounter').textContent = clickCounter;
+        });
+
+        const calcDisplay = document.getElementById('calcDisplay');
+        const toggleScientificBtn = document.getElementById('toggleScientific');
+        const scientificPanel = document.getElementById('scientificPanel');
+        const calcResult = document.getElementById('calcResult');
+
+        function appendToDisplay(value) {
+            if (value === 'pi') {
+                calcDisplay.value += 'π';
+                return;
+            }
+            if (value === 'e') {
+                calcDisplay.value += 'e';
+                return;
+            }
+            if (value === 'x2') {
+                calcDisplay.value += '^2';
+                return;
+            }
+            calcDisplay.value += value;
+        }
+
+        function clearDisplay() {
+            calcDisplay.value = '';
+            calcResult.textContent = 'Результат: 0';
+        }
+
+        function removeLastCharacter() {
+            calcDisplay.value = calcDisplay.value.slice(0, -1);
+        }
+
+        function safeEvaluate(expression) {
+            const prepared = expression
+                .replace(/\s+/g, '')
+                .replace(/×/g, '*')
+                .replace(/÷/g, '/')
+                .replace(/π/g, 'Math.PI')
+                .replace(/e\b/g, 'Math.E')
+                .replace(/\^/g, '**')
+                .replace(/sin\(/g, 'sinDeg(')
+                .replace(/cos\(/g, 'cosDeg(')
+                .replace(/tan\(/g, 'tanDeg(')
+                .replace(/sqrt\(/g, 'Math.sqrt(')
+                .replace(/log\(/g, 'Math.log10(')
+                .replace(/ln\(/g, 'Math.log(')
+                .replace(/pow\(/g, 'Math.pow(')
+                .replace(/\%/g, '/100');
+
+            const validPattern = /^[0-9+\-*/().,^%\sπeMathsinDegcosDegtanDeglog10sqrt\(\)\*\*]+$/i;
+            if (!validPattern.test(prepared)) {
+                throw new Error('Некоректний вираз');
+            }
+
+            const fn = new Function(
+                'const sinDeg = x => Math.sin((x * Math.PI) / 180); const cosDeg = x => Math.cos((x * Math.PI) / 180); const tanDeg = x => Math.tan((x * Math.PI) / 180); return (' + prepared + ');'
+            );
+
+            return fn();
+        }
+
+        document.querySelectorAll('[data-value]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const value = button.dataset.value;
+
+                if (value === 'C') {
+                    clearDisplay();
+                    return;
+                }
+
+                if (value === 'DEL') {
+                    removeLastCharacter();
+                    return;
+                }
+
+                if (value === '=') {
+                    try {
+                        const result = safeEvaluate(calcDisplay.value);
+                        calcDisplay.value = Number.isFinite(result) ? Number(result.toFixed(10)).toString() : String(result);
+                        calcResult.textContent = 'Результат: ' + calcDisplay.value;
+                    } catch (error) {
+                        calcResult.textContent = 'Помилка: ' + error.message;
+                    }
+                    return;
+                }
+
+                appendToDisplay(value);
+                calcResult.textContent = 'Результат: ' + calcDisplay.value;
+            });
+        });
+
+        toggleScientificBtn.addEventListener('click', () => {
+            scientificPanel.classList.toggle('hidden');
+            toggleScientificBtn.textContent = scientificPanel.classList.contains('hidden') ? 'Інженерний режим' : 'Звичайний режим';
+        });
+
+        function buildMatrix() {
+            const size = Number(document.getElementById('matrixSize').value);
+            const container = document.getElementById('matrixContainer');
+            const matrix = [];
+
+            let html = '<table>';
+            for (let row = 0; row < size; row += 1) {
+                html += '<tr>';
+                matrix[row] = [];
+                for (let col = 0; col < size; col += 1) {
+                    const value = (row + 1) * (col + 1);
+                    matrix[row][col] = value;
+                    html += `<td>${value}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            container.innerHTML = html;
+
+            let sum = 0;
+            for (let i = 0; i < size; i += 1) {
+                sum += matrix[i][i];
+            }
+            document.getElementById('matrixResult').textContent = 'Сума елементів головної діагоналі: ' + sum;
+        }
+
+        document.getElementById('buildMatrixBtn').addEventListener('click', buildMatrix);
+        buildMatrix();
+
+        document.getElementById('consoleBtn').addEventListener('click', () => {
+            const a = 17;
+            const b = 5;
+            console.log('console.log() demo');
+            console.log('Остача від ділення:', a % b);
+            console.log('Чи дорівнює нулю?', (a % b) === 0);
+            console.log('Значення за форматом: %d + %d = %d', 8, 7, 8 + 7);
+            console.log('Рядок: %s', 'JavaScript');
+        });
+
+        const footerText = document.getElementById('footer-text');
+        const currentYear = new Date().getFullYear();
+        footerText.textContent = `© ${currentYear} MyCompany`;
+
+        setTimeout(() => {
+            const mediaItem = document.getElementById('media-item');
+            mediaItem.src = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80';
+        }, 3000);
+
+        const highlightText = document.getElementById('highlight');
+        highlightText.style.color = 'purple';
+        highlightText.style.fontSize = '20px';
+
+        const treeData = {
+            fruits: ['apple', 'pineapple', 'apricot', 'pear', 'lemon'],
+            vegetables: ['potatoes', 'beetroot', 'carrots', 'pear']
+        };
+
+        const treeContainer = document.getElementById('tree-container');
+
+        function buildTree(nodeName, items) {
+            const list = document.createElement('ul');
+            const title = document.createElement('a');
+            title.href = '#';
+            title.className = 'node';
+            title.textContent = nodeName;
+            title.addEventListener('click', (event) => {
+                event.preventDefault();
+                list.classList.toggle('hidden-tree');
+            });
+
+            const parent = document.createElement('li');
+            parent.appendChild(title);
+            parent.appendChild(list);
+
+            items.forEach(item => {
+                const itemNode = document.createElement('li');
+                itemNode.textContent = item;
+                list.appendChild(itemNode);
+            });
+
+            return parent;
+        }
+
+        const fruitsNode = buildTree('fruits', treeData.fruits);
+        const vegetablesNode = buildTree('vegetables', treeData.vegetables);
+        treeContainer.appendChild(fruitsNode);
+        treeContainer.appendChild(vegetablesNode);
+
+        const galleryImages = [
+            'https://images.unsplash.com/photo-1517479149777-5f3b1511d5ad?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80'
+        ];
+
+        let galleryIndex = 0;
+        const galleryImage = document.getElementById('galleryImage');
+        const galleryCounter = document.getElementById('galleryCounter');
+
+        function renderGallery() {
+            galleryImage.src = galleryImages[galleryIndex];
+            galleryCounter.textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
+        }
+
+        document.getElementById('prevImage').addEventListener('click', () => {
+            galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+            renderGallery();
+        });
+
+        document.getElementById('nextImage').addEventListener('click', () => {
+            galleryIndex = (galleryIndex + 1) % galleryImages.length;
+            renderGallery();
+        });
+
+        renderGallery();
+
+        document.getElementById('namesBtn').addEventListener('click', () => {
+            const names = document.getElementById('namesInput').value
+                .split(',')
+                .map(name => name.trim())
+                .filter(Boolean);
+
+            const limit = Number(document.getElementById('asciiLimit').value);
+            const vowels = 'AEIOU';
+            const list = document.getElementById('namesResult');
+            list.innerHTML = '';
+
+            names.forEach(name => {
+                const greeting = vowels.includes(name[0].toUpperCase()) ? 'Goodbye' : 'Hello';
+                const item = document.createElement('li');
+                item.textContent = greeting + ' ' + name;
+                list.appendChild(item);
+            });
+
+            const info = document.createElement('li');
+            info.textContent = 'ASCII-поріг: ' + limit;
+            list.appendChild(info);
+
+            names.forEach(name => {
+                const asciiSum = [...name].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+                console.log(name + ': ASCII = ' + asciiSum + '; результат = ' + (asciiSum > limit ? 'вище порогу' : 'не вище порогу'));
+            });
+        });
+    </script>
+</body>
+</html>
