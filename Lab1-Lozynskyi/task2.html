@@ -52,9 +52,11 @@
         <label for="productName">Виберіть товар:</label>
         <select id="productName">
             <option value="">-- Виберіть товар --</option>
-            
             products.forEach((product, index) => {
-                document.write(`<option value="${index}">${product}</option>`);
+                const option = document.createElement("option");
+                option.value = index;
+                option.textContent = product;
+                document.getElementById("productName").appendChild(option);
             });
         </select>
         <br><br>
