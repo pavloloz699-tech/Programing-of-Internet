@@ -10,10 +10,23 @@
         const cost = [12.5, 18.0, 9.75, 240.0, 95.5, 28.0, 15.0];
 
         let selectedIndex = -1;
+        
+        function populateProducts() {
+            const select = document.getElementById("productName");
+            select.innerHTML = '<option value="">-- Виберіть товар --</option>';
+
+            products.forEach((product) => {
+                const option = document.createElement("option");
+                option.value = product;
+                option.textContent = product;
+                select.appendChild(option);
+            });
+        }
 
         function updateSelectedIndex() {
             const select = document.getElementById("productName");
-            selectedIndex = select.selectedIndex;
+            const selectedValue = select.value;
+            selectedIndex = selectedValue ? products.indexOf(selectedValue) : -1;
         }
 
         function fun1() {
@@ -42,6 +55,8 @@
             const total = quantity[selectedIndex] * cost[selectedIndex];
             document.getElementById("totalResult").value = `Загальна сума: ${total.toFixed(2)} грн`;
         }
+
+        document.addEventListener("DOMContentLoaded", populateProducts);
     </script>
 </head>
 <body>
@@ -50,14 +65,8 @@
 
     <form>
         <label for="productName">Виберіть товар:</label>
-        <select id="productName">
+        <select id="productName" onchange="fun1()">
             <option value="">-- Виберіть товар --</option>
-            products.forEach((product, index) => {
-                const option = document.createElement("option");
-                option.value = index;
-                option.textContent = product;
-                document.getElementById("productName").appendChild(option);
-            });
         </select>
         <br><br>
 
