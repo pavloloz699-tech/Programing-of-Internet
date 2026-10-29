@@ -33,15 +33,19 @@
             updateSelectedIndex();
             const resultQty = document.getElementById("quantityResult");
             const resultCost = document.getElementById("costResult");
+            const qtylabel = document.getElementById("qtylabel");
 
             if (selectedIndex === -1) {
+                
                 resultQty.value = "Товар не вибрано";
                 resultCost.value = "Товар не вибрано";
+                
                 return;
             }
-
-            resultQty.value = `Кількість: ${quantity[selectedIndex]}`;
+        
+            resultQty.value =  `${products[selectedIndex]} ${quantity[selectedIndex]}`;
             resultCost.value = `Вартість: ${cost[selectedIndex]} грн`;
+            
         }
 
         function fun2() {
@@ -73,7 +77,7 @@
         <input type="button" value="Наявна кількість і вартість" onclick="fun1()">
         <br><br>
 
-        <label for="quantityResult">Кількість:</label>
+        <label for="quantityResult" ${products} >Кількість:</label>
         <input type="text" id="quantityResult" size="40">
         <br><br>
 
