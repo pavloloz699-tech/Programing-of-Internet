@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Лабораторна робота 7 — об'єкти, Date, класи</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px auto; max-width: 900px; padding: 0 12px; }
+  h1 { font-size: 22px; }
+  fieldset { margin: 14px 0; border: 1px solid #aaa; border-radius: 6px; padding: 10px 14px; }
+  legend { font-weight: bold; }
+  label { display: inline-block; min-width: 230px; margin: 3px 0; }
+  input[type=text] { padding: 5px; width: 140px; margin: 3px 4px 3px 0; }
+  button { padding: 5px 14px; cursor: pointer; margin-right: 6px; }
+  .out { margin-top: 8px; padding: 6px 10px; background: #eef6ee; border-left: 4px solid #3a8; min-height: 18px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Лабораторна робота 7. Об'єкти, Date, класи (варіант 9)</h1>
+
+<!-- ============ Завдання 1 ============ -->
+<fieldset>
+  <legend>Завдання 1. Об'єкт «Час»</legend>
+  <div>Час: години <input type="text" id="h1" style="width:50px" value="20">
+       хвилини <input type="text" id="m1" style="width:50px" value="30">
+       секунди <input type="text" id="s1" style="width:50px" value="45">
+       <button onclick="setTimeFromFields()">Встановити час</button></div>
+  <div>1.1. <button onclick="showCurrentTime()">Показати поточний час</button></div>
+  <div>1.2. Змінити час на (секунд, можна від'ємне):
+       <input type="text" id="delta1" style="width:80px" value="30">
+       <button onclick="changeTime()">Змінити</button></div>
+  <div class="out" id="o1"></div>
+</fieldset>
+
+<!-- ============ Завдання 2 ============ -->
+<fieldset>
+  <legend>Завдання 2. Об'єкт Date</legend>
+  <div>Завдання 2.1. Виведення поточної дати, дня тижня і часу
+       <button onclick="task21()">Виконати</button></div>
+  <div class="out" id="o21"></div>
+  <hr>
+  <div>Завдання 2.2. Останній день місяця. Рік: <input type="text" id="y22" style="width:70px" value="2024">
+       Місяць (1–12): <input type="text" id="mo22" style="width:50px" value="2">
+       <button onclick="task22()">Виконати</button></div>
+  <div class="out" id="o22"></div>
+  <hr>
+  <div>Завдання 2.3. Секунди від початку дня і до кінця дня
+       <button onclick="task23()">Виконати</button></div>
+  <div class="out" id="o23"></div>
+</fieldset>
+
+<!-- ============ Завдання 3, 4, 5 ============ -->
+<fieldset>
+  <legend>Завдання 3–5. Класи Car, ElectricCar, MathHelper</legend>
+  <button onclick="task345()">Виконати завдання 3–5</button>
+  <div class="out" id="o345"></div>
+</fieldset>
+
+<!-- ============ Завдання 6, варіант 9 ============ -->
+<fieldset>
+  <legend>Завдання 6 (варіант 9). Фігури: Shape, Circle, Triangle</legend>
+  <div><label for="r6">Радіус кола (число):</label><input type="text" id="r6"></div>
+  <div><label for="b6">Основа трикутника (число):</label><input type="text" id="b6"></div>
+  <div><label for="h6">Висота трикутника (число):</label><input type="text" id="h6"></div>
+  <button onclick="showShapes()">Показати інформацію</button>
+  <button onclick="clearShapes()">Очистити поля</button>
+  <div class="out" id="o6"></div>
+</fieldset>
+
+<script>
+function out(id, text) { document.getElementById(id).textContent = text; }
+function num(id) { return Number(document.getElementById(id).value.replace(",", ".")); }
+function pad(n) { return String(n).padStart(2, "0"); }
+
+/* =====================================================================
+   ЗАВДАННЯ 1. Об'єкт, що описує час
+   ===================================================================== */
+const timeObj = {
+  hours: 20,
+  minutes: 30,
+  seconds: 45,
+
+  // привести час до нормального вигляду (0-23 : 0-59 : 0-59)
+  normalize() {
+    let total = this.hours * 3600 + this.minutes * 60 + this.seconds;
+    total = ((total % 86400) + 86400) % 86400;      // доба = 86400 с; працює і для від'ємних
+    this.hours   = Math.floor(total / 3600);
+    this.minutes = Math.floor((total % 3600) / 60);
+    this.seconds = total % 60;
+  },
+
+  toString() {
+    return pad(this.hours) + ":" + pad(this.minutes) + ":" + pad(this.seconds);
+  },
+
+  // 1.2 додати (або відняти) секунди
+  addSeconds(sec) {
+    this.seconds += sec;     // просто додаємо, а normalize() "переносить" надлишок
+    this.normalize();
+  }
+};
+
+function setTimeFromFields() {
+  timeObj.hours = num("h1");
+  timeObj.minutes = num("m1");
+  timeObj.seconds = num("s1");
+  timeObj.normalize();
+  out("o1", "Встановлено час: " + timeObj);
+}
+
+// 1.1 Виведення поточного часу (системного)
+function showCurrentTime() {
+  const now = new Date();
+  timeObj.hours = now.getHours();
+  timeObj.minutes = now.getMinutes();
+  timeObj.seconds = now.getSeconds();
+  out("o1", "Поточний час: " + timeObj);
+}
+
+// 1.2 Зміна часу на передану кількість секунд
+function changeTime() {
+  const d = num("delta1");
+  if (isNaN(d)) { out("o1", "Введіть число секунд"); return; }
+  const before = timeObj.toString();
+  timeObj.addSeconds(d);
+  out("o1", before + " + (" + d + " с) = " + timeObj);
+}
+
+/* =====================================================================
+   ЗАВДАННЯ 2. Date
+   ===================================================================== */
+const MONTHS_GEN = ["січня","лютого","березня","квітня","травня","червня",
+                    "липня","серпня","вересня","жовтня","листопада","грудня"];
+const WEEKDAYS = ["неділя","понеділок","вівторок","середа","четвер","пʼятниця","субота"];
+
+// 2.1
+function task21() {
+  const d = new Date();
+  const text = "Дата: " + d.getDate() + " " + MONTHS_GEN[d.getMonth()] + " " + d.getFullYear() + " року\n" +
+               "День тижня: " + WEEKDAYS[d.getDay()] + "\n" +
+               "Час: " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  out("o21", text);
+}
+
+// 2.2 Останній день місяця: день "0" наступного місяця = останній день поточного
+function lastDayOfMonth(year, month) {      // month: 1..12
+  return new Date(year, month, 0).getDate();
+}
+function task22() {
+  const y = num("y22"), m = num("mo22");
+  if (!Number.isInteger(y) || !Number.isInteger(m) || m < 1 || m > 12) {
+    out("o22", "Введіть коректний рік і місяць (1–12)"); return;
+  }
+  out("o22", "Останній день місяця " + pad(m) + "." + y + ": " + lastDayOfMonth(y, m));
+}
+
+// 2.3 Секунди від початку дня і до початку наступного
+function secondsInfo() {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfNext = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return {
+    passed: Math.floor((now - startOfDay) / 1000),
+    left: Math.ceil((startOfNext - now) / 1000)
+  };
+}
+function task23() {
+  const r = secondsInfo();
+  out("o23", "З початку дня минуло секунд: " + r.passed + "\nДо початку наступного дня: " + r.left);
+}
+
+/* =====================================================================
+   ЗАВДАННЯ 3–5. Класи
+   ===================================================================== */
+class Car {
+  constructor(brand, model, year) {
+    this.brand = brand;
+    this.model = model;
+    this.year = year;
+  }
+  info() {
+    return "Авто: " + this.brand + " " + this.model + ", " + this.year + " року.";
+  }
+}
+
+class ElectricCar extends Car {
+  constructor(brand, model, year, battery) {
+    super(brand, model, year);     // виклик конструктора батьківського класу
+    this.battery = battery;
+  }
+  charge() {
+    return this.brand + " " + this.model + " заряджається... Батарея: " + this.battery + " kWh";
+  }
+}
+
+class MathHelper {
+  static add(a, b) { return a + b; }   // статичний метод викликається на класі, а не на об'єкті
+}
+
+function task345() {
+  const car1 = new Car("Toyota", "Camry", 2020);
+  const tesla = new ElectricCar("Tesla", "Model 3", 2022, 75);
+  out("o345",
+    "Завдання 3: " + car1.info() + "\n" +
+    "Завдання 4: " + tesla.info() + "\n" +
+    "            " + tesla.charge() + "\n" +
+    "Завдання 5: MathHelper.add(5, 7) = " + MathHelper.add(5, 7));
+}
+
+/* =====================================================================
+   ЗАВДАННЯ 6, ВАРІАНТ 9
+   ===================================================================== */
+class Shape {
+  static count = 0;                   // статичне поле: скільки фігур створено
+
+  constructor(name) {
+    this.name = name;
+    Shape.count++;
+  }
+  getArea() { }                       // порожній метод, його перевизначають нащадки
+
+  static resetCount() { Shape.count = 0; }   // статичний метод
+}
+
+class Circle extends Shape {
+  constructor(radius) {
+    super("Коло");
+    this.radius = radius;
+  }
+  getArea() { return Math.PI * this.radius * this.radius; }
+}
+
+class Triangle extends Shape {
+  constructor(base, height) {
+    super("Трикутник");
+    this.base = base;
+    this.height = height;
+  }
+  getArea() { return 0.5 * this.base * this.height; }
+}
+
+function showShapes() {
+  const r = num("r6"), b = num("b6"), h = num("h6");
+  const raw = ["r6", "b6", "h6"].map(function (id) { return document.getElementById(id).value.trim(); });
+  if (raw.some(function (v) { return v === ""; }) || [r, b, h].some(function (v) { return isNaN(v) || v <= 0; })) {
+    out("o6", "Заповніть усі поля додатними числами"); return;
+  }
+
+  Shape.resetCount();
+  // масив різних фігур; для кожної викликається getArea() - поліморфізм
+  const shapes = [new Circle(r), new Triangle(b, h), new Circle(r * 2)];
+  let text = "";
+  shapes.forEach(function (s) {
+    let params = (s instanceof Circle) ? "радіус = " + s.radius : "основа = " + s.base + ", висота = " + s.height;
+    text += s.name + " (" + params + "): площа = " + s.getArea().toFixed(2) + "\n";
+  });
+  text += "Створено фігур: " + Shape.count;
+  out("o6", text);
+}
+
+function clearShapes() {
+  ["r6", "b6", "h6"].forEach(function (id) { document.getElementById(id).value = ""; });
+  out("o6", "");
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Завдання 2 — валідація форми</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 30px; }
+  form { width: 560px; }
+  .row { display: flex; align-items: center; margin-bottom: 14px; }
+  .row label { width: 150px; }
+  .row input { width: 200px; padding: 6px; border: 2px solid #999; border-radius: 4px; outline: none; }
+  .row .msg { margin-left: 10px; font-size: 13px; }
+ 
+  /* стани поля */
+  .row input.ok  { border-color: green; }
+  .row input.bad { border-color: red; color: red; }
+  .row .tick  { color: green; font-size: 22px; font-weight: bold; }
+  .row .error { color: red; }
+ 
+  button { padding: 8px 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+ 
+<h3>Реєстрація</h3>
+<form id="regForm" novalidate>
+  <div class="row">
+    <label for="email">E-mail:</label>
+    <input type="text" id="email">
+  </div>
+  <div class="row">
+    <label for="fullname">Ім'я та прізвище:</label>
+    <input type="text" id="fullname">
+  </div>
+  <div class="row">
+    <label for="login">Логін:</label>
+    <input type="text" id="login">
+  </div>
+  <div class="row">
+    <label for="password">Пароль:</label>
+    <input type="password" id="password">
+  </div>
+  <div class="row">
+    <label for="zip">Поштовий індекс:</label>
+    <input type="text" id="zip">
+  </div>
+  <button type="button" id="checkBtn">Перевірити</button>
+</form>
+ 
+<script>
+// ===== НАЛАШТУВАННЯ ПЕРЕВІРОК =====
+// Щоб змінити правило — змініть regex або текст помилки потрібного поля.
+const rules = [
+  {
+    id: "email",
+    // будь-який логін, потім @pnu.edu.ua
+    regex: /^[A-Za-z0-9._-]+@pnu\.edu\.ua$/i,
+    error: "E-mail має закінчуватись на @pnu.edu.ua"
+  },
+  {
+    id: "fullname",
+    // слово 1: Велика + маленькі; пробіл; слово 2: усі ВЕЛИКІ (кирилиця або латиниця)
+    regex: /^[A-ZА-ЯІЇЄҐ][a-zа-яіїєґ]+ [A-ZА-ЯІЇЄҐ]+$/,
+    error: "Формат: Ім'я ПРІЗВИЩЕ (напр. Іван ПЕТРЕНКО), лише літери"
+  },
+  {
+    id: "login",
+    regex: /^[A-Za-z]+$/,
+    error: "Логін — лише латинські літери"
+  },
+  {
+    id: "password",
+    // lookahead-перевірки: є літера, є цифра, є спецсимвол; довжина від 8
+    regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[_\-!@#$%^&*]).{8,}$/,
+    error: "Мінімум 8 символів: літера, цифра та спецсимвол _-!@#$%^&*"
+  },
+  {
+    id: "zip",
+    regex: /^\d{5}$/,
+    error: "Індекс має складатися рівно з 5 цифр"
+  }
+];
+ 
+// ===== ФУНКЦІЇ ДЛЯ РОБОТИ З DOM =====
+ 
+// Прибрати попередню позначку/повідомлення біля поля
+function clearMark(input) {
+  input.classList.remove("ok", "bad");
+  const old = input.parentNode.querySelector(".msg");
+  if (old) old.remove();                      // видаляємо елемент з DOM
+}
+ 
+// Додати справа від поля новий елемент (галочку або текст помилки)
+function addMark(input, text, cssClass) {
+  const span = document.createElement("span"); // створюємо елемент
+  span.className = "msg " + cssClass;
+  span.textContent = text;
+  input.parentNode.appendChild(span);          // вставляємо в рядок після input
+}
+ 
+// Перевірити одне поле
+function validateField(rule) {
+  const input = document.getElementById(rule.id);
+  clearMark(input);
+ 
+  if (rule.regex.test(input.value)) {
+    input.classList.add("ok");                 // зелена рамка
+    addMark(input, "✓", "tick");               // галочка
+    return true;
+  } else {
+    input.classList.add("bad");                // червона рамка і текст
+    addMark(input, rule.error, "error");       // вимога до заповнення
+    return false;
+  }
+}
+ 
+// ===== ОБРОБНИК КНОПКИ =====
+document.getElementById("checkBtn").addEventListener("click", function () {
+  let allValid = true;
+  rules.forEach(function (rule) {
+    if (!validateField(rule)) allValid = false;
+  });
+  if (allValid) alert("Усі поля заповнені правильно!");
+});
+</script>
+ 
+</body>
+</html>
+ 

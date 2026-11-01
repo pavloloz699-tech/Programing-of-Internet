@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Лабораторна 8 — JavaScript-анімації</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px auto; max-width: 900px; padding: 0 12px; }
+  h1 { font-size: 22px; }
+  fieldset { margin: 16px 0; border: 1px solid #aaa; border-radius: 6px; padding: 10px 14px; }
+  legend { font-weight: bold; }
+  button { padding: 5px 14px; cursor: pointer; margin: 6px 6px 0 0; }
+
+  /* смуга, по якій рухається елемент */
+  .path { position: relative; width: 540px; max-width: 100%; height: 30px; outline: 1px solid #E8C48E; }
+  .brick { position: absolute; top: 5px; left: 0; width: 40px; height: 20px; background: #EE6B47; cursor: pointer; }
+
+  /* поле для м'яча */
+  #field { position: relative; width: 300px; height: 200px; border: 1px solid #99a; background: #f6f1e4; overflow: hidden; }
+  #ball { position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; background: #e8473f; }
+
+  progress { width: 5%; cursor: pointer; }
+  textarea { display: block; width: 90%; border: 1px solid #BBB; color: #444; font-size: 110%; }
+  #frames { font-family: monospace; }
+
+  h2 { font-size: 18px; margin-top: 28px; }
+
+  /* ---- Завдання 2: логотип (темна панель) ---- */
+  #logoPanel { background: #10172a; color: #dfe7ff; text-align: center; padding: 12px 8px 16px; border-radius: 10px; margin-top: 10px; }
+  #logoPanel h3 { font-size: 16px; margin: 4px 0 10px; font-weight: normal; }
+  #stage { width: 100%; max-width: 860px; height: auto; background: #16203a; border: 2px solid #3b4a7a; border-radius: 10px; cursor: pointer; }
+  #state { font-size: 14px; opacity: .85; }
+</style>
+</head>
+<body>
+<h1>Лабораторна робота 8. JavaScript-анімації</h1>
+<h2>Завдання 1. Приклади анімацій</h2>
+<p>Приклади побудовані за статтею <a href="https://uk.javascript.info/js-animation">uk.javascript.info/js-animation</a>.</p>
+
+<!-- ============ 1. setInterval ============ -->
+<fieldset>
+  <legend>1. Анімація через setInterval (клікніть по цеглині)</legend>
+  <div class="path"><div class="brick" id="brick1"></div></div>
+</fieldset>
+
+<!-- ============ 2. requestAnimationFrame ============ -->
+<fieldset>
+  <legend>2. requestAnimationFrame: інтервали між кадрами, мс</legend>
+  <button onclick="measureFrames()">Виміряти 10 кадрів</button>
+  <div id="frames"></div>
+</fieldset>
+
+<!-- ============ 3. Функція animate, linear ============ -->
+<fieldset>
+  <legend>3. Структурована анімація: функція animate (клікніть по індикатору)</legend>
+  <progress id="elem"></progress>
+</fieldset>
+
+<!-- ============ 4. Функції часу ============ -->
+<fieldset>
+  <legend>4. Функції часу (timing): рух цеглини по смузі</legend>
+  <div class="path"><div class="brick" id="brick4"></div></div>
+  <button onclick="runTiming(quad)">quad</button>
+  <button onclick="runTiming(circ)">circ</button>
+  <button onclick="runTiming(backEaseIn)">back</button>
+  <button onclick="runTiming(bounce)">bounce</button>
+  <button onclick="runTiming(elasticEaseIn)">elastic</button>
+</fieldset>
+
+<!-- ============ 5. easeOut, easeInOut ============ -->
+<fieldset>
+  <legend>5. Реверс: easeOut та easeInOut (на прикладі відскоку)</legend>
+  <div class="path"><div class="brick" id="brick5"></div></div>
+  <button onclick="runBrick5(bounceEaseOut)">bounce easeOut</button>
+  <button onclick="runBrick5(bounceEaseInOut)">bounce easeInOut</button>
+</fieldset>
+
+<!-- ============ 6. Цікавіша draw: друк тексту ============ -->
+<fieldset>
+  <legend>6. Цікавіша функція draw: анімований друк тексту</legend>
+  <textarea id="textExample" rows="3">Інженерія програмного забезпечення — це систематичний підхід до розробки, експлуатації та супроводу програм.</textarea>
+  <button onclick="animateText(textExample)">Запустити анімований друк!</button>
+</fieldset>
+
+<!-- ============ 7. Завдання зі статті: м'яч ============ -->
+<fieldset>
+  <legend>7. Завдання зі статті: падіння м'яча з відскоком</legend>
+  <div id="field"><div id="ball"></div></div>
+  <button onclick="dropBall()">Завдання 1: м'яч падає і відскакує</button>
+  <button onclick="dropBallRight()">Завдання 2: відскок і зсув праворуч</button>
+</fieldset>
+
+
+<h2>Завдання 2. Анімований логотип спеціальності «Інженерія програмного забезпечення»</h2>
+<div id="logoPanel">
+  <h3>Клікніть на логотип або кнопку, щоб запустити чи зупинити анімацію</h3>
+  <svg id="stage" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg"></svg>
+
+
+  <div>
+    <button id="toggle">Старт / Стоп</button>
+    <span id="state">Анімацію зупинено — клікніть, щоб запустити</span>
+  </div>
+</div>
+
+<!-- Скрипт завдання 1 (приклади). Обгорнутий у функцію, щоб змінні не змішувались із логотипом -->
+<script>
+(function () {
+/* =====================================================================
+   Загальна функція animate і функції часу зі статті
+   ===================================================================== */
+
+// animate: рахує частку часу timeFraction (0..1), перетворює її функцією timing
+// у progress і передає у draw, яка малює поточний кадр.
+function animate({timing, draw, duration}) {
+  let start = performance.now();
+  requestAnimationFrame(function animate(time) {
+    let timeFraction = (time - start) / duration;
+    if (timeFraction > 1) timeFraction = 1;
+    if (timeFraction < 0) timeFraction = 0;     // перший кадр може мати time трохи менший за start
+
+    let progress = timing(timeFraction);
+    draw(progress);
+
+    if (timeFraction < 1) requestAnimationFrame(animate);
+  });
+}
+
+function linear(t) { return t; }
+function quad(t)   { return Math.pow(t, 2); }                     // степінь n
+function circ(t)   { return 1 - Math.sin(Math.acos(t)); }         // дуга
+function back(x, t){ return Math.pow(t, 2) * ((x + 1) * t - x); } // "стрільба з лука"
+function bounce(t) {                                              // відскок
+  for (let a = 0, b = 1; 1; a += b, b /= 2) {
+    if (t >= (7 - 4 * a) / 11) {
+      return -Math.pow((11 - 6 * a - 11 * t) / 4, 2) + Math.pow(b, 2);
+    }
+  }
+}
+function elastic(x, t) {                                          // еластична анімація
+  return Math.pow(2, 10 * (t - 1)) * Math.cos(20 * Math.PI * x / 3 * t);
+}
+let backEaseIn    = t => back(1.5, t);
+let elasticEaseIn = t => elastic(1.5, t);
+
+// перетворення "in" у "out" та "inOut"
+function makeEaseOut(timing) {
+  return function (t) { return 1 - timing(1 - t); };
+}
+function makeEaseInOut(timing) {
+  return function (t) {
+    if (t < .5) return timing(2 * t) / 2;
+    else return (2 - timing(2 * (1 - t))) / 2;
+  };
+}
+let bounceEaseOut   = makeEaseOut(bounce);
+let bounceEaseInOut = makeEaseInOut(bounce);
+
+/* =====================================================================
+   1. setInterval
+   ===================================================================== */
+const brick1 = document.getElementById("brick1");
+brick1.onclick = function () {
+  let start = Date.now();                       // запам'ятовуємо момент початку
+  let timer = setInterval(function () {
+    let timePassed = Date.now() - start;        // скільки часу минуло
+    brick1.style.left = timePassed / 5 + "px";  // за 2000 мс це 400 px
+    if (timePassed > 2000) clearInterval(timer);
+  }, 20);                                       // ~50 кадрів на секунду
+};
+
+/* =====================================================================
+   2. requestAnimationFrame: вимірювання інтервалів між кадрами
+   ===================================================================== */
+function measureFrames() {
+  const box = document.getElementById("frames");
+  box.textContent = "";
+  let prev = performance.now();
+  let times = 0;
+  requestAnimationFrame(function measure(time) {
+    box.textContent += Math.floor(time - prev) + " ";
+    prev = time;
+    if (times++ < 10) requestAnimationFrame(measure);
+  });
+}
+
+/* =====================================================================
+   3. animate + linear: зміна ширини <progress>
+   ===================================================================== */
+document.getElementById("elem").onclick = function () {
+  const elem = this;
+  animate({
+    duration: 1000,
+    timing: linear,
+    draw(progress) { elem.style.width = progress * 100 + "%"; }
+  });
+};
+
+/* =====================================================================
+   4. Різні функції часу
+   ===================================================================== */
+function runTiming(timingFn) {
+  const brick = document.getElementById("brick4");
+  const max = brick.parentNode.clientWidth - brick.clientWidth;
+  animate({
+    duration: 2000,
+    timing: timingFn,
+    draw(progress) { brick.style.left = progress * max + "px"; }
+  });
+}
+
+/* =====================================================================
+   5. easeOut і easeInOut
+   ===================================================================== */
+function runBrick5(timingFn) {
+  const brick = document.getElementById("brick5");
+  const max = brick.parentNode.clientWidth - brick.clientWidth;
+  animate({
+    duration: 3000,
+    timing: timingFn,
+    draw(progress) { brick.style.left = progress * max + "px"; }
+  });
+}
+
+/* =====================================================================
+   6. Анімований друк тексту
+   ===================================================================== */
+function animateText(textArea) {
+  let text = textArea.dataset.full || textArea.value;   // повний текст зберігаємо один раз
+  textArea.dataset.full = text;
+  let to = text.length, from = 0;
+
+  animate({
+    duration: 5000,
+    timing: bounce,                                      // текст "стрибає": то з'являється, то частково зникає
+    draw(progress) {
+      let result = (to - from) * progress + from;
+      textArea.value = text.slice(0, Math.ceil(result));
+    }
+  });
+}
+
+/* =====================================================================
+   7. Завдання зі статті: м'яч
+   ===================================================================== */
+const field = document.getElementById("field");
+const ball = document.getElementById("ball");
+
+// Завдання 1: м'яч падає вниз з відскоком (bounce + easeOut)
+function dropBall() {
+  ball.style.left = "0px";
+  let to = field.clientHeight - ball.clientHeight;
+  animate({
+    duration: 2000,
+    timing: makeEaseOut(bounce),
+    draw(progress) { ball.style.top = to * progress + "px"; }
+  });
+}
+
+// Завдання 2: одночасно відскок по вертикалі і рівномірне зміщення вправо
+function dropBallRight() {
+  let height = field.clientHeight - ball.clientHeight;
+  let width = 100;
+
+  animate({                                             // вертикаль: відскок
+    duration: 2000,
+    timing: makeEaseOut(bounce),
+    draw(progress) { ball.style.top = height * progress + "px"; }
+  });
+  animate({                                             // горизонталь: плавний рух
+    duration: 2000,
+    timing: makeEaseOut(quad),
+    draw(progress) { ball.style.left = width * progress + "px"; }
+  });
+}
+
+  Object.assign(window, { measureFrames, runTiming, runBrick5, animateText, dropBall, dropBallRight,
+                          quad, circ, backEaseIn, bounce, elasticEaseIn, bounceEaseOut, bounceEaseInOut });
+})();
+</script>
+
+<!-- Скрипт завдання 2 (логотип) -->
+<script>
+(function () {
+/* ===================== ПІДГОТОВКА ===================== */
+const NS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById("stage");
+
+// допоміжна функція створення SVG-елемента з атрибутами
+function make(tag, attrs, parent) {
+  const el = document.createElementNS(NS, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  (parent || svg).appendChild(el);
+  return el;
+}
+
+// фонова сітка (статична)
+for (let x = 0; x <= 800; x += 40) make("line", { x1: x, y1: 0, x2: x, y2: 450, stroke: "#1f2c50", "stroke-width": 1 });
+for (let y = 0; y <= 450; y += 40) make("line", { x1: 0, y1: y, x2: 800, y2: y, stroke: "#1f2c50", "stroke-width": 1 });
+
+/* ===================== ОБ'ЄКТ 1: ШЕСТЕРНЯ ===================== */
+// будуємо контур шестерні з N зубців; змінюється розмір (пульсація), обертання та колір
+function gearPath(rOuter, rInner, teeth) {
+  let d = "";
+  const step = Math.PI * 2 / (teeth * 2);
+  for (let i = 0; i < teeth * 2; i++) {
+    const r = (i % 2 === 0) ? rOuter : rInner;
+    const a = i * step;
+    d += (i === 0 ? "M" : "L") + (Math.cos(a) * r).toFixed(1) + " " + (Math.sin(a) * r).toFixed(1) + " ";
+  }
+  return d + "Z";
+}
+const gearG = make("g", { transform: "translate(200 200)" });
+const gear = make("path", { d: gearPath(70, 55, 10), fill: "#4aa3ff", stroke: "#cfe6ff", "stroke-width": 3 }, gearG);
+make("circle", { r: 22, fill: "#16203a", stroke: "#cfe6ff", "stroke-width": 3 }, gearG);
+const gearText = make("text", { "text-anchor": "middle", "dominant-baseline": "central", fill: "#cfe6ff", "font-size": 18, "font-weight": "bold" }, gearG);
+gearText.textContent = "ІПЗ";
+
+/* ===================== ОБ'ЄКТ 2: ОРБІТИ (два тіла в різні боки) ===================== */
+const orbitA = make("circle", { r: 9, fill: "#ffd166" });
+const orbitB = make("circle", { r: 6, fill: "#ef476f" });
+make("circle", { cx: 200, cy: 200, r: 105, fill: "none", stroke: "#3b4a7a", "stroke-dasharray": "4 6" });
+
+/* ===================== ОБ'ЄКТ 3: «< / >» що рухається і відбивається від меж ===================== */
+const code = make("text", { x: 0, y: 0, fill: "#06d6a0", "font-family": "monospace", "font-weight": "bold", "text-anchor": "middle" });
+code.textContent = "</>";
+const codeState = { x: 450, y: 120, vx: 140, size: 40 };   // vx - швидкість, змінює знак при відбитті
+
+/* ===================== ОБ'ЄКТ 4: ЗМІННИЙ ПРЯМОКУТНИК-ПРОГРЕС ===================== */
+const barBg = make("rect", { x: 330, y: 190, width: 400, height: 16, rx: 8, fill: "#22305a" });
+const bar = make("rect", { x: 330, y: 190, width: 10, height: 16, rx: 8, fill: "#ffd166" });
+const barLabel = make("text", { x: 330, y: 182, fill: "#a9b8e6", "font-size": 13 });
+barLabel.textContent = "build: 0%";
+
+/* ===================== ОБ'ЄКТ 5: ТЕКСТ, ЩО З'ЯВЛЯЄТЬСЯ ПО СИМВОЛАХ ===================== */
+const TITLE = "Інженерія програмного забезпечення";
+const title = make("text", { x: 400, y: 380, fill: "#ffffff", "font-size": 30, "text-anchor": "middle", "font-weight": "bold" });
+const sub = make("text", { x: 400, y: 415, fill: "#8fa2d8", "font-size": 18, "text-anchor": "middle", "font-family": "monospace" });
+
+/* ===================== ОБ'ЄКТ 6: ЧАСТИНКИ «0»/«1», ЩО ЗАРОДЖУЮТЬСЯ І ЗНИКАЮТЬ ===================== */
+const particles = [];      // {el, x, y, vy, life}
+let spawnTimer = 0;
+
+/* ===================== ЄДИНИЙ ЦИКЛ АНІМАЦІЇ ===================== */
+let running = false;       // чи йде анімація
+let last = 0;              // час попереднього кадру
+let t = 0;                 // "внутрішній" час анімації; зупиняється разом із паузою
+let rafId = null;
+
+function frame(now) {
+  if (!running) return;
+  const dt = Math.min((now - last) / 1000, 0.05);   // секунди між кадрами (обмежено, щоб не було стрибків)
+  last = now;
+  t += dt;
+  update(dt);
+  rafId = requestAnimationFrame(frame);
+}
+
+function update(dt) {
+  /* --- шестерня: обертання + зміна розміру + зміна кольору --- */
+  const scale = 1 + 0.18 * Math.sin(t * 2);                 // пульсація
+  gearG.setAttribute("transform", "translate(200 200) rotate(" + (t * 40) + ") scale(" + scale + ")");
+  gearText.setAttribute("transform", "rotate(" + (-t * 40) + ")");   // підпис не крутиться разом із шестернею
+  gear.setAttribute("fill", "hsl(" + ((t * 40) % 360) + ", 80%, 60%)");
+
+  /* --- орбіти: два тіла рухаються в протилежних напрямах --- */
+  orbitA.setAttribute("cx", 200 + 105 * Math.cos(t * 1.6));
+  orbitA.setAttribute("cy", 200 + 105 * Math.sin(t * 1.6));
+  orbitB.setAttribute("cx", 200 + 105 * Math.cos(-t * 2.4 + 2));
+  orbitB.setAttribute("cy", 200 + 105 * Math.sin(-t * 2.4 + 2));
+
+  /* --- «</>»: рух по горизонталі, відбиття від меж, зміна розміру та напряму --- */
+  codeState.x += codeState.vx * dt;
+  if (codeState.x > 740) { codeState.x = 740; codeState.vx = -Math.abs(codeState.vx); }   // змінюємо напрям
+  if (codeState.x < 340) { codeState.x = 340; codeState.vx =  Math.abs(codeState.vx); }
+  codeState.size = 40 + 18 * Math.sin(t * 3);                // зміна розміру
+  codeState.y = 110 + 25 * Math.sin(t * 2.2);                // додатково хитається вгору-вниз
+  code.setAttribute("x", codeState.x);
+  code.setAttribute("y", codeState.y);
+  code.setAttribute("font-size", codeState.size);
+  code.setAttribute("fill", "hsl(" + (160 + 40 * Math.sin(t)) + ", 80%, 55%)");
+
+  /* --- прогрес-бар: росте від 0 до 100% і знову скидається --- */
+  const p = (t * 0.25) % 1;
+  bar.setAttribute("width", Math.max(16, 400 * p));
+  barLabel.textContent = "build: " + Math.round(p * 100) + "%";
+
+  /* --- текст: посимвольна поява, пауза, посимвольне зникнення --- */
+  const CYCLE = 9;                                            // секунд на повний цикл
+  const c = t % CYCLE;
+  const len = TITLE.length;
+  let shown;
+  if (c < 3.5)       shown = Math.floor(c / 3.5 * len);       // набір
+  else if (c < 6)    shown = len;                             // тримаємо
+  else if (c < 8.5)  shown = Math.ceil((1 - (c - 6) / 2.5) * len);   // стирання
+  else               shown = 0;
+  shown = Math.max(0, Math.min(len, shown));
+  title.textContent = TITLE.slice(0, shown) + (shown < len && Math.floor(t * 4) % 2 === 0 ? "|" : "");
+
+  // підпис з'являється цілком (не по символах) і блимає
+  sub.textContent = (c > 3.5 && c < 6.5) ? "Software Engineering" : "";
+  sub.setAttribute("opacity", 0.6 + 0.4 * Math.sin(t * 6));
+
+  /* --- нові об'єкти: частинки «0»/«1» --- */
+  spawnTimer += dt;
+  if (spawnTimer > 0.18) {
+    spawnTimer = 0;
+    const el = make("text", {
+      x: 330 + Math.random() * 420, y: 340,
+      fill: "#06d6a0", "font-family": "monospace", "font-size": 14 + Math.random() * 12
+    });
+    el.textContent = Math.random() < 0.5 ? "0" : "1";
+    particles.push({ el: el, x: 330 + Math.random() * 420, y: 340, vy: 40 + Math.random() * 60, life: 0 });
+    particles[particles.length - 1].el.setAttribute("x", particles[particles.length - 1].x);
+  }
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const q = particles[i];
+    q.life += dt;
+    q.y -= q.vy * dt;
+    q.el.setAttribute("y", q.y);
+    q.el.setAttribute("opacity", Math.max(0, 1 - q.life / 2.2));   // поступове зникнення
+    if (q.life > 2.2) { q.el.remove(); particles.splice(i, 1); }    // видаляємо з DOM
+  }
+}
+
+/* ===================== КЕРУВАННЯ: СТАРТ / СТОП ПО КЛІКУ ===================== */
+const stateLabel = document.getElementById("state");
+function toggle() {
+  running = !running;
+  if (running) {
+    last = performance.now();
+    rafId = requestAnimationFrame(frame);
+    stateLabel.textContent = "Анімація працює — клікніть ще раз, щоб зупинити";
+  } else {
+    cancelAnimationFrame(rafId);
+    stateLabel.textContent = "Анімацію зупинено — клікніть, щоб продовжити";
+  }
+}
+svg.addEventListener("click", toggle);
+document.getElementById("toggle").addEventListener("click", toggle);
+
+// початковий кадр (щоб логотип було видно до старту)
+update(0);
+title.textContent = TITLE;
+})();
+</script>
+</body>
+</html>

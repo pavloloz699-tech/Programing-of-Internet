@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Лабораторна робота 6 — робота з рядками</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px auto; max-width: 900px; padding: 0 12px; }
+  h1 { font-size: 22px; }
+  fieldset { margin: 14px 0; border: 1px solid #aaa; border-radius: 6px; padding: 10px 14px; }
+  legend { font-weight: bold; }
+  input[type=text] { padding: 5px; width: 260px; margin: 3px 4px 3px 0; }
+  input.short { width: 90px; }
+  button { padding: 5px 14px; cursor: pointer; }
+  .out { margin-top: 8px; padding: 6px 10px; background: #eef6ee; border-left: 4px solid #3a8; min-height: 18px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Лабораторна робота 6. Робота з рядками (варіант 9)</h1>
+
+<!-- ===================== Завдання 1 ===================== -->
+<fieldset>
+  <legend>Завдання 1. Довжина рядка</legend>
+  Рядок: <input type="text" id="t1">
+  <button onclick="run1()">Виконати</button>
+  <div class="out" id="o1"></div>
+</fieldset>
+
+<!-- ===================== Завдання 2 ===================== -->
+<fieldset>
+  <legend>Завдання 2. Верхній і нижній регістр</legend>
+  Рядок: <input type="text" id="t2">
+  <button onclick="run2()">Виконати</button>
+  <div class="out" id="o2"></div>
+</fieldset>
+
+<!-- ===================== Завдання 3 ===================== -->
+<fieldset>
+  <legend>Завдання 3. Індекс першого входження символу</legend>
+  Рядок: <input type="text" id="t3">
+  Символ: <input type="text" id="c3" class="short" maxlength="1">
+  <button onclick="run3()">Виконати</button>
+  <div class="out" id="o3"></div>
+</fieldset>
+
+<!-- ===================== Завдання 4 ===================== -->
+<fieldset>
+  <legend>Завдання 4. Кількість входжень символу</legend>
+  Рядок: <input type="text" id="t4" value="hello world">
+  Символ: <input type="text" id="c4" class="short" maxlength="1" value="o">
+  <button onclick="run4()">Виконати</button>
+  <div class="out" id="o4"></div>
+</fieldset>
+
+<!-- ===================== Завдання 5 ===================== -->
+<fieldset>
+  <legend>Завдання 5. Обмін місцями кожних двох сусідніх символів</legend>
+  Рядок: <input type="text" id="t5" value="abcdef">
+  <button onclick="run5()">Виконати</button>
+  <div class="out" id="o5"></div>
+</fieldset>
+
+<!-- ===================== Завдання 6 ===================== -->
+<fieldset>
+  <legend>Завдання 6. Перевірка на спам</legend>
+  Текст: <input type="text" id="t6" style="width:400px" value="Тільки сьогодні знижка!">
+  <button onclick="run6()">Виконати</button>
+  <div class="out" id="o6"></div>
+</fieldset>
+
+<!-- ===================== Завдання 7 ===================== -->
+<fieldset>
+  <legend>Завдання 7. Скорочення рядка (truncate)</legend>
+  Рядок: <input type="text" id="t7" value="Hello, world!">
+  Макс. довжина: <input type="text" id="n7" class="short" value="8">
+  <button onclick="run7()">Виконати</button>
+  <div class="out" id="o7"></div>
+</fieldset>
+
+<!-- ===================== Завдання 8.9 ===================== -->
+<fieldset>
+  <legend>Завдання 8 (пункт 9). Кількість голосних літер</legend>
+  Рядок: <input type="text" id="t8" value="Hello World">
+  <button onclick="run8()">Виконати</button>
+  <div class="out" id="o8"></div>
+</fieldset>
+
+<!-- ===================== Завдання 9.9 ===================== -->
+<fieldset>
+  <legend>Завдання 9 (пункт 9). Видалення неалфавітних символів</legend>
+  Рядок: <input type="text" id="t9" value="abc123!@">
+  <button onclick="run9()">Виконати</button>
+  <div class="out" id="o9"></div>
+</fieldset>
+
+<!-- ===================== Завдання 10.9 ===================== -->
+<fieldset>
+  <legend>Завдання 10 (пункт 9). Найменший підрядок, що містить усі літери іншого рядка</legend>
+  Рядок S: <input type="text" id="s10" value="ADOBECODEBANCD">
+  Літери T: <input type="text" id="t10" class="short" value="ABC">
+  <button onclick="run10()">Виконати</button>
+  <div class="out" id="o10"></div>
+</fieldset>
+
+<script>
+/* ---------- допоміжна функція: вивід результату на сторінку ---------- */
+function show(id, text) {
+  document.getElementById(id).textContent = text;
+}
+function val(id) {
+  return document.getElementById(id).value;
+}
+
+/* ---------- Завдання 1 ---------- */
+function getLength(str) {
+  return str.length;
+}
+function run1() {
+  show("o1", "Довжина: " + getLength(val("t1")));
+}
+
+/* ---------- Завдання 2 ---------- */
+function toUpper(str) { return str.toUpperCase(); }
+function toLower(str) { return str.toLowerCase(); }
+function run2() {
+  const s = val("t2");
+  show("o2", "Верхній регістр: " + toUpper(s) + "\nНижній регістр: " + toLower(s));
+}
+
+/* ---------- Завдання 3 ---------- */
+function firstIndex(str, ch) {
+  return str.indexOf(ch);          // -1, якщо не знайдено
+}
+function run3() {
+  const ch = val("c3");
+  if (ch === "") { show("o3", "Введіть символ"); return; }
+  show("o3", "Індекс першого входження: " + firstIndex(val("t3"), ch));
+}
+
+/* ---------- Завдання 4 ---------- */
+function countChar(str, ch) {
+  let count = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === ch) count++;
+  }
+  return count;
+}
+function run4() {
+  const ch = val("c4");
+  if (ch === "") { show("o4", "Введіть символ"); return; }
+  show("o4", "Кількість входжень: " + countChar(val("t4"), ch));
+}
+
+/* ---------- Завдання 5 ---------- */
+function swapNeighbours(str) {
+  let result = "";
+  for (let i = 0; i < str.length; i += 2) {
+    if (i + 1 < str.length) result += str[i + 1] + str[i];  // пара міняється місцями
+    else result += str[i];                                   // останній символ без пари
+  }
+  return result;
+}
+function run5() {
+  show("o5", "Результат: " + swapNeighbours(val("t5")));
+}
+
+/* ---------- Завдання 6 ---------- */
+const SPAM_WORDS = ["100% безкоштовно", "збільшення продажів", "тільки сьогодні", "не видаляйте"];
+function isSpam(str) {
+  const low = str.toLowerCase();
+  return SPAM_WORDS.some(function (w) { return low.includes(w); });
+}
+function run6() {
+  show("o6", String(isSpam(val("t6"))));
+}
+
+/* ---------- Завдання 7 ---------- */
+function truncate(str, maxLen) {
+  if (str.length <= maxLen) return str;
+  return str.slice(0, maxLen - 3) + "...";   // три крапки входять у maxLen
+}
+function run7() {
+  const n = parseInt(val("n7"), 10);
+  if (isNaN(n) || n < 3) { show("o7", "Максимальна довжина має бути числом не менше 3"); return; }
+  show("o7", truncate(val("t7"), n));
+}
+
+/* ---------- Завдання 8.9: кількість голосних ---------- */
+function countVowels(str) {
+  const m = str.match(/[aeiouyаеєиіїоуюя]/gi);   // латинські та українські голосні
+  return m ? m.length : 0;
+}
+function run8() {
+  show("o8", "Голосних: " + countVowels(val("t8")));
+}
+
+/* ---------- Завдання 9.9: видалити неалфавітні символи ---------- */
+function onlyLetters(str) {
+  return str.replace(/[^A-Za-zА-Яа-яІіЇїЄєҐґ]/g, "");
+}
+function run9() {
+  show("o9", "Результат: " + onlyLetters(val("t9")));
+}
+
+/* ---------- Завдання 10.9: мінімальне вікно (Minimum Window Substring) ---------- */
+function minWindow(s, t) {
+  if (t.length === 0 || s.length < t.length) return "";
+  const need = {};                       // скільки яких літер ще потрібно
+  for (const ch of t) need[ch] = (need[ch] || 0) + 1;
+  let missing = t.length;                // скільки літер ще бракує
+  let left = 0, bestStart = 0, bestLen = Infinity;
+
+  for (let right = 0; right < s.length; right++) {
+    const c = s[right];
+    if (need[c] > 0) missing--;
+    if (c in need) need[c]--;            // c в need -> зменшуємо лічильник (може піти в мінус)
+
+    while (missing === 0) {              // вікно містить усі літери -> пробуємо стиснути зліва
+      if (right - left + 1 < bestLen) {
+        bestLen = right - left + 1;
+        bestStart = left;
+      }
+      const l = s[left];
+      if (l in need) {
+        need[l]++;
+        if (need[l] > 0) missing++;      // втратили потрібну літеру
+      }
+      left++;
+    }
+  }
+  return bestLen === Infinity ? "" : s.substr(bestStart, bestLen);
+}
+function run10() {
+  const r = minWindow(val("s10"), val("t10"));
+  show("o10", r === "" ? "Такого підрядка немає" : "Результат: " + r);
+}
+</script>
+</body>
+</html>
